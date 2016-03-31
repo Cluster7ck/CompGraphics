@@ -23,14 +23,13 @@ Vector Camera::generateRay(unsigned int x, unsigned int y) const{
     float xPlane = (x - widthInPixel/2) * widthConversion;
     float yPlane = (y - heightInPixel/2) * heightConversion;
     
-    Vector xVec = *(new Vector(1,0,0));
-    Vector yVec = *(new Vector(0,1,0));
-    Vector zVec = *(new Vector(0,0,1));
+    Vector xVec(1,0,0);
+    Vector yVec(0,1,0);
+    Vector zVec(0,0,1);
     
     Vector p = zVec*(zvalue+planedist);
     
-    
-    return p + xVec * xPlane + yVec * yPlane;
+	return (p + xVec * xPlane + yVec * yPlane).normalize();
 
 }
 
