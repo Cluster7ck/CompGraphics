@@ -22,9 +22,9 @@ int main(int argc, const char * argv[]) {
 	//Test2::color();
 	//int a;
 	//std::cin >> a;
-	Scene ModelScene(2);
+	Scene ModelScene(20);
 	RGBImage Image(640, 480);
-	SimpleRayTracer Raytracer(2);
+	SimpleRayTracer Raytracer(1);
 	Raytracer.traceScene(ModelScene, Image);
 	Image.saveToDisk("../raytracing_image.bmp");
     return 0;

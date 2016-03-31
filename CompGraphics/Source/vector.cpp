@@ -22,34 +22,34 @@ float Vector::dot(const Vector& v) const{
 }
 
 Vector Vector::cross(const Vector& v) const{
-    Vector *nv =  new Vector();
+	Vector nv;
     
-    nv->X = this->Y*v.Z - this->Z*v.Y;
-    nv->Y = this->Z*v.X - this->X*v.Z;
-    nv->Z = this->X*v.Y - this->Y*v.X;
+    nv.X = this->Y*v.Z - this->Z*v.Y;
+    nv.Y = this->Z*v.X - this->X*v.Z;
+    nv.Z = this->X*v.Y - this->Y*v.X;
     
-    return *nv;
+    return nv;
     
 }
 
 Vector Vector::operator+(const Vector& v) const{
-    Vector *nv =  new Vector();
+    Vector nv;
     
-    nv->X = this->X + v.X;
-    nv->Y = this->Y + v.Y;
-    nv->Z = this->Z + v.Z;
+    nv.X = this->X + v.X;
+    nv.Y = this->Y + v.Y;
+    nv.Z = this->Z + v.Z;
     
-    return *nv;
+    return nv;
 }
 
 Vector Vector::operator-(const Vector& v) const{
-    Vector *nv =  new Vector();
+    Vector nv;
     
-    nv->X = this->X - v.X;
-    nv->Y = this->Y - v.Y;
-    nv->Z = this->Z - v.Z;
+    nv.X = this->X - v.X;
+    nv.Y = this->Y - v.Y;
+    nv.Z = this->Z - v.Z;
     
-    return *nv;
+    return nv;
 }
 
 Vector& Vector::operator+=(const Vector& v){
@@ -61,23 +61,23 @@ Vector& Vector::operator+=(const Vector& v){
 }
 
 Vector Vector::operator*(float c) const{
-    Vector *nv =  new Vector();
+    Vector nv;
     
-    nv->X = this->X * c;
-    nv->Y = this->Y * c;
-    nv->Z = this->Z * c;
+    nv.X = this->X * c;
+    nv.Y = this->Y * c;
+    nv.Z = this->Z * c;
     
-    return *nv;
+    return nv;
 }
 
 Vector Vector::operator-() const{
-    Vector *nv =  new Vector();
+    Vector nv;
     
-    nv->X = -this->X;
-    nv->Y = -this->Y;
-    nv->Z = -this->Z;
+    nv.X = -this->X;
+    nv.Y = -this->Y;
+    nv.Z = -this->Z;
     
-    return *nv;
+    return nv;
 }
 
 Vector& Vector::normalize(){
@@ -104,7 +104,7 @@ Vector Vector::reflection(const Vector& normal) const{
 
 bool Vector::triangleIntersection(const Vector& d, const Vector& a, const Vector& b, const Vector& c, float& s) const{
 	float epsilon = 0.000001f;
-
+	//this == o
 	//Triangle normal
 	Vector n = (b - a).cross(c - a) * (1 / ((b - a).cross(c - a).length()) );
 	

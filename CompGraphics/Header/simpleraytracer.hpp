@@ -6,6 +6,7 @@
 #include "rgbimage.hpp"
 #include "vector.hpp"
 #include "CGUtilities.h"
+#include "camera.hpp"
 
 class SimpleRayTracer {
 public:

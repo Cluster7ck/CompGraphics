@@ -27,9 +27,10 @@ Vector Camera::generateRay(unsigned int x, unsigned int y) const{
     Vector yVec(0,1,0);
     Vector zVec(0,0,1);
     
-    Vector p = zVec*(zvalue+planedist);
-    
-	return (p + xVec * xPlane + yVec * yPlane).normalize();
+    Vector base = zVec*(zvalue+planedist);
+	Vector planePoint = (base + xVec * xPlane + yVec * yPlane);
+
+	return (planePoint - this->Position()).normalize();
 
 }
 
