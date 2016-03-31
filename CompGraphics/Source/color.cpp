@@ -1,0 +1,58 @@
+//
+//  color.cpp
+//  CG_P1
+//
+//  Created by  on 17.03.16.
+//  Copyright © 2016 hsos. All rights reserved.
+//
+
+#include "../Header/color.hpp"
+
+Color::Color(){
+    R = 0;
+    G = 0;
+    B = 0;
+
+}
+
+Color::Color(float r, float g, float b){
+    R = r;
+    G = g;
+    B = b;
+}
+
+Color Color::operator*(const Color& c) const{
+    Color *nc = new Color();
+    
+    nc->R = c.R*this->R;
+    nc->G = c.G*this->G;
+    nc->B = c.B*this->B;
+    
+    return *nc;
+}
+
+Color Color::operator*(const float Factor) const{
+    Color *nc = new Color();
+    
+    nc->R = this->R*Factor;
+    nc->G = this->G*Factor;
+    nc->B = this->B*Factor;
+    
+    return *nc;
+}
+Color Color::operator+(const Color& c) const{
+    Color *nc = new Color();
+    
+    nc->R = (this->R+c.R);
+    nc->G = (this->G+c.G);
+    nc->B = (this->B+c.B);
+    
+    return *nc;
+}
+Color& Color::operator+=(const Color& c){
+    this->R += c.R;
+    this->G += c.G;
+    this->B += c.B;
+    
+    return *this;
+}
