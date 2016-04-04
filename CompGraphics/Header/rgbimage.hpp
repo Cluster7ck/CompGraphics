@@ -15,34 +15,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <stdio.h>
-
 #include "color.hpp"
-
-typedef uint16_t WORD;//2 Byte
-typedef uint32_t DWORD;//4 Byte
-typedef long LONG;//4 Byte signed
-
-typedef struct tagBITMAPFILEHEADER {
-    WORD  bfType;
-    DWORD bfSize;
-	DWORD bfReserved;
-    DWORD bfOffBits;
-} BITMAPFILEHEADER, *PBITMAPFILEHEADER;
-
-typedef struct tagBITMAPINFOHEADER {
-    DWORD biSize;
-    LONG  biWidth;
-    LONG  biHeight;
-    WORD  biPlanes;
-    WORD  biBitCount;
-    DWORD biCompression;
-    DWORD biSizeImage;
-    LONG  biXPelsPerMeter;
-    LONG  biYPelsPerMeter;
-    DWORD biClrUsed;
-    DWORD biClrImportant;
-} BITMAPINFOHEADER, *PBITMAPINFOHEADER;
 
 class RGBImage{
 public:

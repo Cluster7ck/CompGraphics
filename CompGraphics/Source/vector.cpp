@@ -16,7 +16,6 @@ Vector::Vector(float x, float y, float z){
     Z = z;
 }
 Vector::Vector(){}
-//NEUES KOMMENTAR
 
 float Vector::dot(const Vector& v) const{
     return this->X * v.X + this->Y * v.Y + this->Z * v.Z;

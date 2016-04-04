@@ -42,26 +42,6 @@ bool RGBImage::saveToDisk(const char* Filename){
 	try {
 		f = fopen(Filename, "wb");
 
-        /*BITMAPFILEHEADER tBMFH;
-		tBMFH.bfType = 19778; //BM
-
-        tBMFH.bfSize = 54 + (m_Width*m_Height * 3);
-        tBMFH.bfReserved = 0;
-        tBMFH.bfOffBits = 54;
-        
-        BITMAPINFOHEADER tBMIH;
-        tBMIH.biSize = 40;
-        tBMIH.biWidth = m_Width;
-        tBMIH.biHeight = m_Height;
-        tBMIH.biPlanes = 1;
-        tBMIH.biBitCount = 24;
-        tBMIH.biCompression = 0;
-		tBMIH.biSizeImage = 0;
-		tBMIH.biXPelsPerMeter = 0;
-		tBMIH.biYPelsPerMeter = 0;
-		tBMIH.biClrUsed = 0;
-		tBMIH.biClrImportant = 0;*/
-
 		unsigned int filesize = (m_Width * m_Height * 3) + 54;
 		unsigned char bmpfileheader[14] = { 'B','M', 0,0,0,0, 0,0, 0,0, 54,0,0,0 };
 		unsigned char bmpinfoheader[40] = { 40,0,0,0, 0,0,0,0, 0,0,0,0, 1,0, 24,0,
@@ -82,9 +62,6 @@ bool RGBImage::saveToDisk(const char* Filename){
 		bmpinfoheader[9] = (unsigned char)(m_Height >> 8);
 		bmpinfoheader[10] = (unsigned char)(m_Height >> 16);
 		bmpinfoheader[11] = (unsigned char)(m_Height >> 24);
-		
-		//fwrite(&tBMFH, 1, 14, f);
-		//fwrite(&tBMIH, 1, 40, f);
 		
 		fwrite(&bmpfileheader, 14, 1, f);
 		fwrite(&bmpinfoheader, 40, 1, f);

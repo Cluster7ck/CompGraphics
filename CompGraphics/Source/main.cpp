@@ -16,12 +16,6 @@
 #include "../Header/simpleraytracer.hpp"
 
 int main(int argc, const char * argv[]) {
-	//insert code here...
-	//Test3::rgbimage("..\\");
-	//Test1::vector();
-	//Test2::color();
-	//int a;
-	//std::cin >> a;
 	Scene ModelScene(20);
 	RGBImage Image(640, 480);
 	SimpleRayTracer Raytracer(1);

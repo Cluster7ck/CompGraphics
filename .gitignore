@@ -7,9 +7,10 @@
 *.userosscache
 *.sln.docstates
 
-#BMP renders
+#Own rules
 *.bmp
 *.VC.opendb 
+*.o
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
