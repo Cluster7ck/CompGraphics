@@ -31,7 +31,6 @@ Vector Camera::generateRay(unsigned int x, unsigned int y) const{
 	Vector planePoint = (base + xVec * xPlane + yVec * yPlane);
 
 	return (planePoint - this->Position()).normalize();
-
 }
 
 Vector Camera::Position() const{
