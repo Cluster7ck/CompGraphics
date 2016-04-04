@@ -16,6 +16,7 @@ Vector::Vector(float x, float y, float z){
     Z = z;
 }
 Vector::Vector(){}
+//NEUES KOMMENTAR
 
 float Vector::dot(const Vector& v) const{
     return this->X * v.X + this->Y * v.Y + this->Z * v.Z;
@@ -23,32 +24,32 @@ float Vector::dot(const Vector& v) const{
 
 Vector Vector::cross(const Vector& v) const{
 	Vector nv;
-    
+
     nv.X = this->Y*v.Z - this->Z*v.Y;
     nv.Y = this->Z*v.X - this->X*v.Z;
     nv.Z = this->X*v.Y - this->Y*v.X;
-    
+
     return nv;
-    
+
 }
 
 Vector Vector::operator+(const Vector& v) const{
     Vector nv;
-    
+
     nv.X = this->X + v.X;
     nv.Y = this->Y + v.Y;
     nv.Z = this->Z + v.Z;
-    
+
     return nv;
 }
 
 Vector Vector::operator-(const Vector& v) const{
     Vector nv;
-    
+
     nv.X = this->X - v.X;
     nv.Y = this->Y - v.Y;
     nv.Z = this->Z - v.Z;
-    
+
     return nv;
 }
 
@@ -56,27 +57,27 @@ Vector& Vector::operator+=(const Vector& v){
     this->X += v.X;
     this->Y += v.Y;
     this->Z += v.Z;
-    
+
     return *this;
 }
 
 Vector Vector::operator*(float c) const{
     Vector nv;
-    
+
     nv.X = this->X * c;
     nv.Y = this->Y * c;
     nv.Z = this->Z * c;
-    
+
     return nv;
 }
 
 Vector Vector::operator-() const{
     Vector nv;
-    
+
     nv.X = -this->X;
     nv.Y = -this->Y;
     nv.Z = -this->Z;
-    
+
     return nv;
 }
 
@@ -84,9 +85,9 @@ Vector& Vector::normalize(){
     if(this->length() == 0){
             throw "Division by zero!";
     }
-    
+
     (*this) = (*this) * (1/this->length());
-    
+
     return *this;
 }
 
@@ -107,25 +108,25 @@ bool Vector::triangleIntersection(const Vector& d, const Vector& a, const Vector
 	//this == o
 	//Triangle normal
 	Vector n = (b - a).cross(c - a) * (1 / ((b - a).cross(c - a).length()) );
-	
+
 	s = ( a.dot(n) - (*this).dot(n) ) / d.dot(n);
-    
+
     if(s < 0 ){
         return false;
     }
-    
+
 	//Intersection with plane
 	Vector p = (*this)+d*s;
-    
+
 	//Main triangle
     float abcTri = triangleArea(a, b, c);
-    
+
 
 	//Partial triangles
     float abpTri = triangleArea(a, b, p);
     float acpTri = triangleArea(a, c, p);
     float bcpTri = triangleArea(b, c, p);
-    
+
     if( abcTri + epsilon >= (abpTri + acpTri + bcpTri) ){
         return true;
     }
