@@ -22,18 +22,31 @@ void SimpleRayTracer::traceScene(const Scene& SceneModel, RGBImage& Image) {
 }
 
 Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vector& d, int depth) {
-	Triangle tri;
+	const Triangle* tri;
+    const Triangle* closest = NULL;
+    float s = __FLT_MAX__;
+    Color c(0,0,0);
 	for (unsigned int i = 0; i < SceneModel.getTriangleCount(); i++) {
-		tri = SceneModel.getTriangle(i);
-		float s = 0;
-
-		if (o.triangleIntersection(d, tri.A, tri.B, tri.C, s)) {
+		tri = &(SceneModel.getTriangle(i));
+		
+        float scomp = s;
+		if (o.triangleIntersection(d, tri->A, tri->B, tri->C, scomp)) {
 			//TODO
-			//return localIllumination(o+d*s,o,tri.calcNormal(o + d*s),)
-			return tri.pMtrl->getDiffuseCoeff(Vector (0,0,0));
+            if(scomp < s){
+                //c = tri.pMtrl->getDiffuseCoeff(Vector (0,0,0));
+                closest = tri;
+                //c = localIllumination(o+d*scomp, o, tri.calcNormal(o+d*scomp), SceneModel.getLight(0), *tri.pMtrl);
+
+                s = scomp;
+            }
 		}
 	}
-	return Color(0, 0, 0);
+    Vector surfacePoint = o+d*s;
+    if(closest != NULL){
+       c = localIllumination(surfacePoint, o, closest->calcNormal(surfacePoint), SceneModel.getLight(0), *(closest->pMtrl));
+    }
+    
+    return c;
 }
 
 Color SimpleRayTracer::localIllumination(const Vector& SurfacePoint, const Vector& Eye, const Vector& Normal, const PointLight&, const Material& Material) {

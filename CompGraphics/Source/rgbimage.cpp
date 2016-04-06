@@ -72,9 +72,9 @@ bool RGBImage::saveToDisk(const char* Filename){
         for (int i = 0; i<k; i++) {
             color = m_Image[i];
 
-			rgb[0] = convertColorChannel(color.R);
+			rgb[2] = convertColorChannel(color.R);
 			rgb[1] = convertColorChannel(color.G);
-			rgb[2] = convertColorChannel(color.B);
+			rgb[0] = convertColorChannel(color.B);
 			
 			fwrite(&rgb, 1, 3, f);
         }
