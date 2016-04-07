@@ -9,8 +9,10 @@
 
 #Own rules
 *.bmp
-*.VC.opendb 
+*.VC.opendb
+*.VC.db 
 *.o
+*.sln
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

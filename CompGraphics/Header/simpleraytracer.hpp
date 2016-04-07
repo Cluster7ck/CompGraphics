@@ -2,6 +2,8 @@
 #define simpleraytracer_hpp
 
 #include <stdio.h>
+#include <cfloat>
+
 #include "color.hpp"
 #include "rgbimage.hpp"
 #include "vector.hpp"

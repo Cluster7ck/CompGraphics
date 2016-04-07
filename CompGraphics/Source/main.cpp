@@ -7,6 +7,8 @@
 //
 
 #include <iostream>
+#include <ctime>
+
 #include "../Header/test2.h"
 #include "../Header/test1.h"
 #include "../Header/test3.h"
@@ -19,7 +21,14 @@ int main(int argc, const char * argv[]) {
 	Scene ModelScene(20);
 	RGBImage Image(640, 480);
 	SimpleRayTracer Raytracer(1);
+
+	clock_t start_s = clock();
 	Raytracer.traceScene(ModelScene, Image);
+	clock_t end_s = clock();
+	std::cout << "triangle count: " << ModelScene.getTriangleCount() << std::endl;
+	std::cout << "trace time: " << ((end_s-start_s) / CLOCKS_PER_SEC) << std::endl;
 	Image.saveToDisk("../raytracing_image.bmp");
+	int a = 0;
+	std::cin >> a ;
     return 0;
 }

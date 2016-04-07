@@ -72,6 +72,7 @@ bool RGBImage::saveToDisk(const char* Filename){
         for (int i = 0; i<k; i++) {
             color = m_Image[i];
 
+			//needs to be BGR in file
 			rgb[2] = convertColorChannel(color.R);
 			rgb[1] = convertColorChannel(color.G);
 			rgb[0] = convertColorChannel(color.B);

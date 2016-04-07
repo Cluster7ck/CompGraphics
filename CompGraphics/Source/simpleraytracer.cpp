@@ -10,7 +10,6 @@ void SimpleRayTracer::traceScene(const Scene& SceneModel, RGBImage& Image) {
 
 	Color pColor;
 	Vector ray;
-	
 	for (unsigned int y = 0; y < Image.height(); y++) {
 		 for (unsigned int x = 0; x < Image.width(); x++) {
 			ray = eye.generateRay(x, y);
@@ -24,7 +23,7 @@ void SimpleRayTracer::traceScene(const Scene& SceneModel, RGBImage& Image) {
 Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vector& d, int depth) {
 	const Triangle* tri;
     const Triangle* closest = NULL;
-    float s = __FLT_MAX__;
+    float s = FLT_MAX;
     Color c(0,0,0);
 	for (unsigned int i = 0; i < SceneModel.getTriangleCount(); i++) {
 		tri = &(SceneModel.getTriangle(i));
