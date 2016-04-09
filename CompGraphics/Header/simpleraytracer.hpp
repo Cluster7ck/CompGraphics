@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <cfloat>
+#include <cmath>
 
 #include "color.hpp"
 #include "rgbimage.hpp"

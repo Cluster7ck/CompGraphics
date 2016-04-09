@@ -42,13 +42,33 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 	}
     Vector surfacePoint = o+d*s;
     if(closest != NULL){
-       c = localIllumination(surfacePoint, o, closest->calcNormal(surfacePoint), SceneModel.getLight(0), *(closest->pMtrl));
+        for(int i=0; i < SceneModel.getLightCount(); i++){
+            c += localIllumination(surfacePoint, o, closest->calcNormal(surfacePoint), SceneModel.getLight(i), *(closest->pMtrl));
+        }
+        
+        if(depth > 1){
+            c += trace(SceneModel,surfacePoint, (surfacePoint.reflection(closest->calcNormal(surfacePoint))-surfacePoint).normalize(), depth-1);
+        }
     }
     
     return c;
 }
 
-Color SimpleRayTracer::localIllumination(const Vector& SurfacePoint, const Vector& Eye, const Vector& Normal, const PointLight&, const Material& Material) {
-	//TODO
-	return Material.getDiffuseCoeff(SurfacePoint);
+Color SimpleRayTracer::localIllumination(const Vector& SurfacePoint, const Vector& Eye, const Vector& Normal, const PointLight& pointLight, const Material& Material) {
+    Color c(0,0,0);
+    //diffCo  std::max<float>(0.0, std::min<float>(1.0, f));
+    c+= Material.getAmbientCoeff(SurfacePoint);
+    
+    Vector lightDir = ( pointLight.Position - SurfacePoint ).normalize();
+    c += Material.getDiffuseCoeff(SurfacePoint) * pointLight.Intensity * std::max<float>(0, Normal.dot(lightDir));
+    
+    //Specular
+    Vector e = (Eye - SurfacePoint).normalize();
+    Vector r = (-lightDir).reflection(Normal);
+    
+    c+= Material.getSpecularCoeff(SurfacePoint) * pointLight.Intensity * std::pow(std::max<float>(0, e.dot(r)), Material.getSpecularExp(SurfacePoint) );
+    
+    
+    
+	return c;
 }

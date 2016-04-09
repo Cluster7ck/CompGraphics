@@ -22,32 +22,32 @@ Color::Color(float r, float g, float b){
 }
 
 Color Color::operator*(const Color& c) const{
-    Color *nc = new Color();
+    Color nc;
     
-    nc->R = c.R*this->R;
-    nc->G = c.G*this->G;
-    nc->B = c.B*this->B;
+    nc.R = c.R*this->R;
+    nc.G = c.G*this->G;
+    nc.B = c.B*this->B;
     
-    return *nc;
+    return nc;
 }
 
 Color Color::operator*(const float Factor) const{
-    Color *nc = new Color();
+    Color nc;
     
-    nc->R = this->R*Factor;
-    nc->G = this->G*Factor;
-    nc->B = this->B*Factor;
+    nc.R = this->R*Factor;
+    nc.G = this->G*Factor;
+    nc.B = this->B*Factor;
     
-    return *nc;
+    return nc;
 }
 Color Color::operator+(const Color& c) const{
-    Color *nc = new Color();
+    Color nc;
     
-    nc->R = (this->R+c.R);
-    nc->G = (this->G+c.G);
-    nc->B = (this->B+c.B);
+    nc.R = (this->R+c.R);
+    nc.G = (this->G+c.G);
+    nc.B = (this->B+c.B);
     
-    return *nc;
+    return nc;
 }
 Color& Color::operator+=(const Color& c){
     this->R += c.R;
