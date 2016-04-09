@@ -84,8 +84,8 @@ Vector& Vector::normalize(){
     if(this->length() == 0){
             throw "Division by zero!";
     }
-
-    (*this) = (*this) * (1/this->length());
+	//Vector normal;
+	(*this) = (*this) * (1/this->length());
 
     return *this;
 }
@@ -140,5 +140,5 @@ float triangleArea(Vector a, Vector b, Vector c){
 	//	throw "Not a triangle!";
 	//}
 
-    return (float)((b-a).cross(c-a).length()/2.0);
+    return (float)((b-a).cross(c-a).length()/2);
 }

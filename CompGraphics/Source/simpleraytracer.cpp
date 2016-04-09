@@ -41,13 +41,18 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 		}
 	}
     Vector surfacePoint = o+d*s;
-    if(closest != NULL){
+    if( closest != NULL){
         for(int i=0; i < SceneModel.getLightCount(); i++){
-            c += localIllumination(surfacePoint, o, closest->calcNormal(surfacePoint), SceneModel.getLight(i), *(closest->pMtrl));
+			//sichtverbindung
+			//Vector spToLight = SceneModel.getLight(i).Position - surfacePoint;
+			//if(surfacePoint.triangleIntersection(spToLight, closest->A,closest->B,closest->C,s) == false )
+				c += localIllumination(surfacePoint, o, closest->calcNormal(surfacePoint), SceneModel.getLight(i), *(closest->pMtrl));
         }
         
         if(depth > 1){
-            c += trace(SceneModel,surfacePoint, (surfacePoint.reflection(closest->calcNormal(surfacePoint))-surfacePoint).normalize(), depth-1);
+			Vector sp = surfacePoint;
+			Vector recD = ((d*s).reflection(closest->calcNormal(surfacePoint)) - surfacePoint).normalize();
+            c += trace(SceneModel, sp, recD , depth-1) * closest->pMtrl->getReflectivity(sp);
         }
     }
     
@@ -57,7 +62,7 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 Color SimpleRayTracer::localIllumination(const Vector& SurfacePoint, const Vector& Eye, const Vector& Normal, const PointLight& pointLight, const Material& Material) {
     Color c(0,0,0);
     //diffCo  std::max<float>(0.0, std::min<float>(1.0, f));
-    c+= Material.getAmbientCoeff(SurfacePoint);
+    //c+= Material.getAmbientCoeff(SurfacePoint);
     
     Vector lightDir = ( pointLight.Position - SurfacePoint ).normalize();
     c += Material.getDiffuseCoeff(SurfacePoint) * pointLight.Intensity * std::max<float>(0, Normal.dot(lightDir));
