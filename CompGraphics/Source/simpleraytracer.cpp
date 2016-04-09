@@ -29,7 +29,8 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 		
         float scomp = s;
 		if (o.triangleIntersection(d, tri->A, tri->B, tri->C, scomp)) {
-            if(scomp < s){
+            if(scomp < s && scomp != 0){
+				
                 //c = tri.pMtrl->getDiffuseCoeff(Vector (0,0,0));
                 closest = tri;
                 //c = localIllumination(o+d*scomp, o, tri.calcNormal(o+d*scomp), SceneModel.getLight(0), *tri.pMtrl);
@@ -47,7 +48,7 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 				c += localIllumination(surfacePoint, o, closest->calcNormal(surfacePoint), SceneModel.getLight(i), *(closest->pMtrl));
         }
         
-        if(depth > 1){
+        if(depth > 0){
 			Vector sp = surfacePoint;
 			Vector recD = ((d*s).reflection(closest->calcNormal(surfacePoint))).normalize();
             c += trace(SceneModel, sp, recD , depth-1) * closest->pMtrl->getReflectivity(sp);
