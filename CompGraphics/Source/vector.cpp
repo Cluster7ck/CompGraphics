@@ -110,6 +110,8 @@ bool Vector::triangleIntersection(const Vector& d, const Vector& a, const Vector
 
 	s = ( a.dot(n) - (*this).dot(n) ) / d.dot(n);
 
+	//TODO ignore self
+
     if(s < 0 ){
         return false;
     }

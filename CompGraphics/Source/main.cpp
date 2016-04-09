@@ -20,7 +20,7 @@
 int main(int argc, const char * argv[]) {
 	Scene ModelScene(20);
 	RGBImage Image(640, 480);
-	SimpleRayTracer Raytracer(1);
+	SimpleRayTracer Raytracer(2);
 
 	clock_t start_s = clock();
 	Raytracer.traceScene(ModelScene, Image);

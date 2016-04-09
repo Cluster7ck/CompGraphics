@@ -5,7 +5,6 @@ SimpleRayTracer::SimpleRayTracer(unsigned int MaxDepth) {
 }
 
 void SimpleRayTracer::traceScene(const Scene& SceneModel, RGBImage& Image) {
-	//TODO
 	Camera eye(-8.0f, 1.0f, 1.0f, 0.75f, 640.0f, 480.0f);
 
 	Color pColor;
@@ -30,7 +29,6 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 		
         float scomp = s;
 		if (o.triangleIntersection(d, tri->A, tri->B, tri->C, scomp)) {
-			//TODO
             if(scomp < s){
                 //c = tri.pMtrl->getDiffuseCoeff(Vector (0,0,0));
                 closest = tri;
@@ -43,7 +41,7 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
     Vector surfacePoint = o+d*s;
     if( closest != NULL){
         for(int i=0; i < SceneModel.getLightCount(); i++){
-			//sichtverbindung ... test
+			//sichtverbindung
 			//Vector spToLight = SceneModel.getLight(i).Position - surfacePoint;
 			//if(surfacePoint.triangleIntersection(spToLight, closest->A,closest->B,closest->C,s) == false )
 				c += localIllumination(surfacePoint, o, closest->calcNormal(surfacePoint), SceneModel.getLight(i), *(closest->pMtrl));
@@ -51,7 +49,7 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
         
         if(depth > 1){
 			Vector sp = surfacePoint;
-			Vector recD = ((d*s).reflection(closest->calcNormal(surfacePoint)) - surfacePoint).normalize();
+			Vector recD = ((d*s).reflection(closest->calcNormal(surfacePoint))).normalize();
             c += trace(SceneModel, sp, recD , depth-1) * closest->pMtrl->getReflectivity(sp);
         }
     }
