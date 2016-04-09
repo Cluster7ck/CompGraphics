@@ -43,7 +43,7 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
     Vector surfacePoint = o+d*s;
     if( closest != NULL){
         for(int i=0; i < SceneModel.getLightCount(); i++){
-			//sichtverbindung
+			//sichtverbindung ... test
 			//Vector spToLight = SceneModel.getLight(i).Position - surfacePoint;
 			//if(surfacePoint.triangleIntersection(spToLight, closest->A,closest->B,closest->C,s) == false )
 				c += localIllumination(surfacePoint, o, closest->calcNormal(surfacePoint), SceneModel.getLight(i), *(closest->pMtrl));
