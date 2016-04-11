@@ -29,11 +29,11 @@ public:
     
     static unsigned char convertColorChannel(float f){
 		unsigned char b;
-	   /* unsigned int i;
+		unsigned int i;
         f = std::max<float>(0.0, std::min<float>(1.0, f));
         i = (unsigned int)floor(f * 255);
 		b = (unsigned char)i;
-		*/
+		
 		b = (unsigned char)(f * 255);
         return b;
     }

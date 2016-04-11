@@ -106,12 +106,11 @@ bool Vector::triangleIntersection(const Vector& d, const Vector& a, const Vector
 	float epsilon = 0.000001f;
 	//this == o
 	//Triangle normal
-	Vector n = (b - a).cross(c - a) * (1 / ((b - a).cross(c - a).length()) );
+	Vector n = (b - a).cross(c - a).normalize();
 
 	s = ( a.dot(n) - (*this).dot(n) ) / d.dot(n);
 
-	//TODO ignore self
-
+	//Negativ abfangen, da Strahl vom Dreieck weg zeigt
     if(s < 0 ){
         return false;
     }
@@ -120,27 +119,17 @@ bool Vector::triangleIntersection(const Vector& d, const Vector& a, const Vector
 	Vector p = (*this)+d*s;
 
 	//Main triangle
-    float abcTri = triangleArea(a, b, c);
+    float abcTri = (b - a).cross(c - a).length() / 2;
 
 
 	//Partial triangles
-    float abpTri = triangleArea(a, b, p);
-    float acpTri = triangleArea(a, c, p);
-    float bcpTri = triangleArea(b, c, p);
+    float abpTri = (b - a).cross(p - a).length() / 2;
+    float acpTri = (c - a).cross(p - a).length() / 2;
+    float bcpTri = (c - b).cross(p - b).length() / 2;
 
     if( abcTri + epsilon >= (abpTri + acpTri + bcpTri) ){
         return true;
     }
-    else {
-        return false;
-    }
-}
-
-float triangleArea(Vector a, Vector b, Vector c){
-	//Vector checkVector = (b - a).cross(c - a);
-	//if (checkVector.X == 0 && checkVector.Y == 0 && checkVector.Z == 0) {
-	//	throw "Not a triangle!";
-	//}
-
-    return (float)((b-a).cross(c-a).length()/2);
+    
+	return false;
 }
