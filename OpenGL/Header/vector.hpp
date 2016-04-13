@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <cmath> 
 
-class Vector{
+class Vector {
 public:
     float X;
     float Y;

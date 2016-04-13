@@ -16,7 +16,7 @@
 	#include <GLUT/GLUT.h>
 #endif
 
-#include "Model.h"
+#include "../Header/Model.h"
 #include <vector>
 #include <assert.h>
 #include <math.h>
@@ -24,49 +24,49 @@
 #include <float.h>
 
 
-Vertex::Vertex()
-{
+Vertex::Vertex() {
     
 }
 
-Vertex::Vertex( const Vector& p, const Vector& n, float TexS, float TexT)
-{
+Vertex::Vertex( const Vector& p, const Vector& n, float TexS, float TexT) {
     Position = p;
     Normal = n;
     TexcoordS = TexS;
     TexcoordT = TexT;
 }
 
-BoundingBox::BoundingBox()
-{
+BoundingBox::BoundingBox() {
 }
-BoundingBox::BoundingBox( const Vector& min, const Vector& max) : Min(min), Max(max)
-{
+BoundingBox::BoundingBox( const Vector& min, const Vector& max) : Min(min), Max(max) {
 }
 
-Model::Model() : m_pVertices(NULL), m_pMaterials(NULL), m_MaterialCount(0), m_VertexCount(0)
-{
+Model::Model() : m_pVertices(NULL), m_pMaterials(NULL), m_MaterialCount(0), m_VertexCount(0) {
 
 }
 
-Model::~Model()
-{
+Model::~Model() {
     if( m_pVertices)
         delete [] m_pVertices;
     if(m_pMaterials)
         delete [] m_pMaterials;
 }
 
-bool Model::load( const char* Filename, bool FitSize)
-{
-    createCube();
+bool Model::load(const char* Filename, bool FitSize) {
+	//Aufgabe 1
+	//createCube();		
+
+	//Aufgabe 2
+	createObject(Filename, FitSize);
+
     return true;
 }
 
-void Model::createCube()
-{
-    Vector PositionsFromFile[8] =
-    {
+void Model::createObject(const char* Filename, bool FitSize) {
+	std::cout << "Die Datei \"" << Filename << "\" kann nicht oeffnen." << std::endl;
+}
+
+void Model::createCube() {
+    Vector PositionsFromFile[8] = {
         Vector(-1, -1, 1),
         Vector(-1,  1, 1),
         Vector( 1, -1, 1),
@@ -76,12 +76,10 @@ void Model::createCube()
         Vector(-1, -1, -1),
         Vector(-1, 1, -1)
     };
-    struct Texcoord
-    {
+    struct Texcoord {
         float s,t;
     };
-    Texcoord TexcoordFromFile[20] =
-    {
+    Texcoord TexcoordFromFile[20] = {
         { 0, 1 },
         { 1, 0 },
         { 0, 0 },
@@ -103,12 +101,10 @@ void Model::createCube()
         { 0, 1 },
         { 1, 1 }
     };
-    struct Face
-    {
+    struct Face {
         unsigned int pidx[3], tidx[3];
     };
-    Face FacesFromFile[12]
-    {
+    Face FacesFromFile[12] {
         //face 1
         {3,4,2,   9, 12, 6},
         {3,2,1,   9, 6, 3},
@@ -126,15 +122,12 @@ void Model::createCube()
         {4,8,2,   10,19,4},
         //face 6
         {5,3,1,   13,7,1},
-        {5,1,7,   13,1,17}
-        
+        {5,1,7,   13,1,17} 
     };
-    
     
     m_pVertices = new Vertex[12*3];
     m_VertexCount = 12*3;
-    for(int i=0; i<12; i++ )
-    {
+    for(int i=0; i<12; i++ ) {
         unsigned int PosIdx0 = FacesFromFile[i].pidx[0]-1;
         unsigned int PosIdx1 = FacesFromFile[i].pidx[1]-1;
         unsigned int PosIdx2 = FacesFromFile[i].pidx[2]-1;
@@ -164,30 +157,51 @@ void Model::createCube()
     }
     
     printf( "Vertices:\n");
-    for( unsigned int i=0; i<m_VertexCount; i++)
-    {
+    for( unsigned int i=0; i<m_VertexCount; i++) {
         printf( "%2i: ", i);
         printf( "p(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Position.X, m_pVertices[i].Position.Y, m_pVertices[i].Position.Z );
         printf( "n(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Normal.X, m_pVertices[i].Normal.Y, m_pVertices[i].Normal.Z );
-        printf( "t(%2.1f, %2.1f)\n", m_pVertices[i].TexcoordS, m_pVertices[i].TexcoordT );
-        
+        printf( "t(%2.1f, %2.1f)\n", m_pVertices[i].TexcoordS, m_pVertices[i].TexcoordT );  
     }
 }
 
 
-const BoundingBox& Model::boundingBox() const
-{
+
+const BoundingBox& Model::boundingBox() const {
     return m_Box;
 }
 
-void Model::drawLines() const
-{
+void Model::drawLines() const {
     // Aufgabe 1
+	glColor3f(0.60, 0.20, 0.60);		//rgb(60%,20%,60%) = violette
+	glBegin(GL_LINES);
+
+	for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
+		glVertex3f(m_pVertices[i * 3].Position.X, m_pVertices[i * 3].Position.Y, m_pVertices[i * 3].Position.Z);
+		glVertex3f(m_pVertices[i * 3 + 1].Position.X, m_pVertices[i * 3 + 1].Position.Y, m_pVertices[i * 3 + 1].Position.Z);
+
+		glVertex3f(m_pVertices[i * 3 + 1].Position.X, m_pVertices[i * 3 + 1].Position.Y, m_pVertices[i * 3 + 1].Position.Z);
+		glVertex3f(m_pVertices[i * 3 + 2].Position.X, m_pVertices[i * 3 + 2].Position.Y, m_pVertices[i * 3 + 2].Position.Z);
+
+		glVertex3f(m_pVertices[i * 3 + 2].Position.X, m_pVertices[i * 3 + 2].Position.Y, m_pVertices[i * 3 + 2].Position.Z);
+		glVertex3f(m_pVertices[i * 3].Position.X, m_pVertices[i * 3].Position.Y, m_pVertices[i * 3].Position.Z);
+	}
+
+	glEnd();
 }
 
-void Model::drawTriangles() const
-{
+void Model::drawTriangles() const {
     // Aufgabe 1
+	glBegin(GL_TRIANGLES);
+
+	for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
+			glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
+		}
+	}
+
+	glEnd();
 }
 
 

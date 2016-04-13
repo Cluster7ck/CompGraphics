@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Philipp Lensing. All rights reserved.
 //
 
-#include "Texture.h"
+#include "../Header/Texture.h"
 #include <stdint.h>
 
 #ifdef WIN32
@@ -17,16 +17,14 @@
 	#define LONG int32_t
 #endif
 
-typedef struct tagBITMAPFILEHEADER_
-{
+typedef struct tagBITMAPFILEHEADER_ {
     WORD bfType;  //specifies the file type
     DWORD bfSize;  //specifies the size in bytes of the bitmap file
     DWORD bfReserved;  //reserved; must be 0
     DWORD bOffBits;  //species the offset in bytes from the bitmapfileheader to the bitmap bits
 }BITMAPFILEHEADER_;
 
-typedef struct tagBITMAPINFOHEADER_
-{
+typedef struct tagBITMAPINFOHEADER_ {
     DWORD biSize;  //specifies the number of bytes required by the struct
     LONG biWidth;  //specifies width in pixels
     LONG biHeight;  //species height in pixels
@@ -41,23 +39,19 @@ typedef struct tagBITMAPINFOHEADER_
 }BITMAPINFOHEADER_;
 
 
-Texture::Texture() : m_TextureID(0)
-{
+Texture::Texture() : m_TextureID(0) {
     
 }
 
-Texture::~Texture()
-{
+Texture::~Texture() {
     
 }
 
-bool Texture::isValid() const
-{
+bool Texture::isValid() const {
     return m_TextureID > 0;
 }
 
-bool Texture::LoadFromBMP( const char* Filename )
-{
+bool Texture::LoadFromBMP( const char* Filename ) {
     unsigned int width, height;
     
     unsigned char* data = LoadBMP(Filename, width, height);
@@ -80,8 +74,7 @@ bool Texture::LoadFromBMP( const char* Filename )
     return true;
 }
 
-void Texture::apply() const
-{
+void Texture::apply() const {
     if(m_TextureID==0)
         return;
     
@@ -90,13 +83,11 @@ void Texture::apply() const
     
 }
 
-unsigned char* Texture::LoadBMP(const char* Filename, unsigned int& width, unsigned int& height)
-{
+unsigned char* Texture::LoadBMP(const char* Filename, unsigned int& width, unsigned int& height) {
     FILE *filePtr;
     BITMAPFILEHEADER_ bitmapFileHeader;
     BITMAPINFOHEADER_ bitmapInfoHeader;
     unsigned char *bitmapImage;
-    
     
     filePtr = fopen(Filename,"rb");
     if (filePtr == NULL)
@@ -107,16 +98,14 @@ unsigned char* Texture::LoadBMP(const char* Filename, unsigned int& width, unsig
     fread(&bitmapFileHeader.bfReserved, sizeof(DWORD),1,filePtr);
     fread(&bitmapFileHeader.bOffBits, sizeof(DWORD),1,filePtr);
     
-    if (bitmapFileHeader.bfType !=0x4D42)
-    {
+    if (bitmapFileHeader.bfType !=0x4D42) {
         fclose(filePtr);
         return NULL;
     }
     
     fread(&bitmapInfoHeader, sizeof(BITMAPINFOHEADER_),1,filePtr);
     
-    if(bitmapInfoHeader.biBitCount!=24)
-    {
+    if(bitmapInfoHeader.biBitCount!=24) {
         fclose(filePtr);
         return NULL;
     }
@@ -127,8 +116,7 @@ unsigned char* Texture::LoadBMP(const char* Filename, unsigned int& width, unsig
     fseek(filePtr, bitmapFileHeader.bOffBits, SEEK_SET);
     bitmapImage = new unsigned char[bitmapInfoHeader.biSizeImage];
     
-    if (!bitmapImage)
-    {
+    if (!bitmapImage) {
         delete [] bitmapImage;
         fclose(filePtr);
         return NULL;
@@ -136,8 +124,7 @@ unsigned char* Texture::LoadBMP(const char* Filename, unsigned int& width, unsig
     
     fread(bitmapImage,bitmapInfoHeader.biSizeImage,1,filePtr);
     
-    if (bitmapImage == NULL)
-    {
+    if (bitmapImage == NULL) {
         delete [] bitmapImage;
         fclose(filePtr);
         return NULL;
@@ -145,8 +132,7 @@ unsigned char* Texture::LoadBMP(const char* Filename, unsigned int& width, unsig
     
     //swap the r and b values to get RGB (bitmap is BGR)
     unsigned char tempRGB;
-    for (unsigned int imageIdx = 0; imageIdx < bitmapInfoHeader.biSizeImage;imageIdx+=3)
-    {
+    for (unsigned int imageIdx = 0; imageIdx < bitmapInfoHeader.biSizeImage;imageIdx+=3) {
         tempRGB = bitmapImage[imageIdx];
         bitmapImage[imageIdx] = bitmapImage[imageIdx + 2];
         bitmapImage[imageIdx + 2] = tempRGB;

@@ -10,6 +10,23 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header\Camera.h" />
+    <ClInclude Include="Header\color.hpp" />
+    <ClInclude Include="Header\Material.h" />
+    <ClInclude Include="Header\Model.h" />
+    <ClInclude Include="Header\Texture.h" />
+    <ClInclude Include="Header\vector.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\color.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Material.cpp" />
+    <ClCompile Include="Source\Model.cpp" />
+    <ClCompile Include="Source\Texture.cpp" />
+    <ClCompile Include="Source\vector.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B088BC9D-6C76-40CB-B991-ED61D9101BCC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -84,24 +101,6 @@
       <AdditionalDependencies>glew32.lib;freeglut.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="color.h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="vector.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="color.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="vector.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

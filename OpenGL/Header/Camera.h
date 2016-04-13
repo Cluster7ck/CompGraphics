@@ -11,13 +11,12 @@
 
 #include <iostream>
 
-#include "vector.h"
+#include "../Header/vector.hpp"
 
 extern const unsigned int g_WindowWidth;
 extern const unsigned int g_WindowHeight;
 
-class Camera
-{
+class Camera {
 public:
     Camera();
     Camera(Vector& Pos, Vector& Target, Vector& Up);
@@ -33,6 +32,7 @@ public:
     void mouseInput( int x, int y, int Button, int State);
     
     void apply();
+
 protected:
     void pan( float dx, float dy);
     void zoom( float dz);
@@ -50,6 +50,5 @@ protected:
     int m_LastMouseX;
     int m_LastMouseY;
 };
-
 
 #endif /* defined(__RealtimeRending__Camera__) */

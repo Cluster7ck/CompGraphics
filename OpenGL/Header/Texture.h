@@ -20,18 +20,17 @@
 	#include <GLUT/GLUT.h>
 #endif
 
-class Texture
-{
+class Texture {
 public:
     Texture();
     ~Texture();
     bool LoadFromBMP( const char* Filename );
     void apply() const;
     bool isValid() const;
+
 protected:
     unsigned char* LoadBMP( const char* Filename, unsigned int& width, unsigned int& height );
     GLuint m_TextureID;
-
 };
 
 #endif /* defined(__RealtimeRending__Texture__) */

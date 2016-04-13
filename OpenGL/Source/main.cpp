@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Philipp Lensing. All rights reserved.
 //
 
-
 #include <iostream>
 #include <math.h>
 #ifdef WIN32
@@ -18,12 +17,17 @@
 	#include <OpenGL/OpenGL.h>
 	#include <GLUT/GLUT.h>
 #endif
-#include "Camera.h"
-#include "model.h"
-#include "texture.h"
+#include "../Header/Camera.h"
+#include "../Header/model.h"
+#include "../Header/texture.h"
 
 // Model that should be loaded
-const char* g_ModelToLoad = "figure.obj";
+//const char* g_ModelToLoad = "../OBJmodels/conference/conference.obj";
+//const char* g_ModelToLoad = "../OBJmodels/sibenik/sibenik.obj";
+//const char* g_ModelToLoad = "../OBJmodels/sibenik/sponza.obj";
+//const char* g_ModelToLoad = "../OBJmodels/sponza/sponza.obj";
+//const char* g_ModelToLoad = "../OBJmodels/cube.obj";
+const char* g_ModelToLoad = "../OBJmodels/figure.obj";
 
 // window x and y size
 const unsigned int g_WindowWidth=1024;
@@ -31,9 +35,6 @@ const unsigned int g_WindowHeight=768;
 
 // light position (point light)
 const Vector g_LightPos = Vector( 0,4,0);
-
-
-
 
 Camera g_Camera;
 Model g_Model;
@@ -46,8 +47,7 @@ void MouseCallback(int Button, int State, int x, int y);
 void MouseMoveCallback(int x, int y);
 void KeyboardCallback( unsigned char key, int x, int y);
 
-enum RenderMode
-{
+enum RenderMode {
     RENDERMODE_LINES,
     RENDERMODE_TRIANGLES,
     LAST_RENDERMODE
@@ -55,8 +55,7 @@ enum RenderMode
 
 RenderMode g_RenderMode = RENDERMODE_LINES;
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char * argv[]) {
     // initialize the glut system and create a window
     glutInitWindowSize(g_WindowWidth, g_WindowHeight);
     glutInit(&argc, argv);
@@ -76,12 +75,9 @@ int main(int argc, char * argv[])
     g_Model.load(g_ModelToLoad);
     
     glutMainLoop();
-    
 }
 
-
-void SetupDefaultGLSettings()
-{
+void SetupDefaultGLSettings() {
     glClearColor(0, 0, 0, 255);
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -114,11 +110,9 @@ void SetupDefaultGLSettings()
     glShadeModel(GL_SMOOTH);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-
 }
 
-void DrawGroundGrid()
-{
+void DrawGroundGrid() {
     const float GridSize=10.0f;
     const unsigned int GridSegments=20;
     const float GridStep=GridSize/(float)GridSegments;
@@ -127,45 +121,37 @@ void DrawGroundGrid()
     glDisable( GL_LIGHTING);
     glBegin(GL_LINES);
         glColor3f(1.0f, 1.0f, 1.0f);
-        for( unsigned int i=0; i<GridSegments+1; i++)
-        {
+        for( unsigned int i=0; i<GridSegments+1; i++) {
             float itpos=GridOrigin + GridStep*(float)i;
             glVertex3f(itpos, 0, GridOrigin);
             glVertex3f(itpos, 0, GridOrigin+GridSize);
         
             glVertex3f(GridOrigin, 0, itpos);
             glVertex3f(GridOrigin+GridSize, 0, itpos);
-
         }
     glEnd();
     glEnable( GL_LIGHTING);
-
 }
 
-void MouseCallback(int Button, int State, int x, int y)
-{
+void MouseCallback(int Button, int State, int x, int y) {
     g_MouseButton = Button;
     g_MouseState = State;
     g_Camera.mouseInput(x,y,Button,State);
 }
 
-void MouseMoveCallback( int x, int y)
-{
+void MouseMoveCallback( int x, int y) {
     g_Camera.mouseInput(x,y,g_MouseButton,g_MouseState);
 }
 
-void KeyboardCallback( unsigned char key, int x, int y)
-{
+void KeyboardCallback( unsigned char key, int x, int y) {
     if( key == 'l')
         g_RenderMode=RENDERMODE_LINES;
     else if( key == 't')
-        g_RenderMode=RENDERMODE_TRIANGLES;
-    
+        g_RenderMode=RENDERMODE_TRIANGLES; 
 }
 
 
-void DrawScene()
-{
+void DrawScene() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
@@ -177,16 +163,13 @@ void DrawScene()
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 
-    if(g_RenderMode == RENDERMODE_LINES)
-    {
+    if(g_RenderMode == RENDERMODE_LINES) {
         glDisable(GL_LIGHTING);
         g_Model.drawLines();
         glEnable(GL_LIGHTING);
-    }
-    else if(g_RenderMode== RENDERMODE_TRIANGLES)
+    } else if(g_RenderMode== RENDERMODE_TRIANGLES)
         g_Model.drawTriangles();
     
     glutSwapBuffers();
-    glutPostRedisplay();
-    
+    glutPostRedisplay();  
 }

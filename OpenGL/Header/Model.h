@@ -10,15 +10,14 @@
 #define __RealtimeRending__Model__
 
 #include <iostream>
-#include "vector.h"
-#include "color.h"
+#include "../Header/vector.hpp"
+#include "../Header/color.hpp"
 #include <string>
 #include <map>
 #include <vector>
 #include "material.h"
 
-struct Vertex
-{
+struct Vertex {
     Vertex();
     Vertex( const Vector& p, const Vector& n, float TexS, float TexT);
     Vector Position;
@@ -27,8 +26,7 @@ struct Vertex
     float  TexcoordT;
 };
 
-class BoundingBox
-{
+class BoundingBox {
 public:
     BoundingBox();
     BoundingBox( const Vector& min, const Vector& max);
@@ -36,8 +34,7 @@ public:
     Vector Max;
 };
 
-class Model
-{
+class Model {
 public:
     Model();
     ~Model();
@@ -45,8 +42,10 @@ public:
     bool load( const char* Filename, bool FitSize=true);
     void drawLines() const;
     void drawTriangles() const;
+
 protected:
     void createCube();
+	void createObject(const char* filename, bool fitSize);
     Material* m_pMaterials;
     unsigned int m_MaterialCount;
     Vertex* m_pVertices;

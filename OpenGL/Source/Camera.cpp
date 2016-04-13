@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Philipp Lensing. All rights reserved.
 //
 
-#include "Camera.h"
+#include "../Header/Camera.h"
 
 #ifdef WIN32
 	#include <windows.h>
@@ -20,71 +20,54 @@
 
 #include <math.h>
 
-Camera::Camera() : m_Position(0.0f,5.0f,-5.0f), m_Target(0.0f,0.0f,0.0f), m_Up(0.0f,1.0f,0.0f), m_LastMouseX(-1), m_LastMouseY(-1), m_Panning(0,0,0), m_Zoom(0,0,0), m_Rotation(0,0,0)
-{
+Camera::Camera() : m_Position(0.0f,5.0f,-5.0f), m_Target(0.0f,0.0f,0.0f), m_Up(0.0f,1.0f,0.0f), m_LastMouseX(-1), m_LastMouseY(-1), m_Panning(0,0,0), m_Zoom(0,0,0), m_Rotation(0,0,0) {
 
 }
 
-Camera::Camera(Vector& Pos, Vector& Target, Vector& Up)
-{
+Camera::Camera(Vector& Pos, Vector& Target, Vector& Up) {
     m_Up = Up;
     m_Position = Pos;
     m_Target = Target;
 }
 
-Vector Camera::getPosition()
-{
+Vector Camera::getPosition() {
     return m_Position + m_Panning + m_Zoom + m_Rotation;
 }
-Vector Camera::getTarget()
-{
+Vector Camera::getTarget() {
     return m_Target + m_Panning;
 }
-Vector Camera::getUp()
-{
+Vector Camera::getUp() {
     return m_Up;
 }
 
-void Camera::setPosition( const Vector& Pos)
-{
+void Camera::setPosition( const Vector& Pos) {
     m_Position = Pos;
     m_Panning = m_Rotation = m_Zoom = Vector(0,0,0);
 
 
 }
-void Camera::setTarget( const Vector& Target)
-{
+void Camera::setTarget( const Vector& Target) {
     m_Target = Target;
     m_Panning = Vector(0,0,0);
 }
-void Camera::setUp( const Vector& Up)
-{
+void Camera::setUp( const Vector& Up) {
     m_Up = Up;
 }
 
-void Camera::mouseInput( int x, int y, int Button, int State)
-{
-    if(State == GLUT_DOWN)
-    {
+void Camera::mouseInput( int x, int y, int Button, int State) {
+    if(State == GLUT_DOWN) {
         if(m_LastMouseX==-1) m_LastMouseX = x;
         if(m_LastMouseY==-1) m_LastMouseY = y;
         
-        if( Button == GLUT_LEFT_BUTTON )
-        {
+        if( Button == GLUT_LEFT_BUTTON ) {
             rotate((float)x, (float)y );
-        }
-        else if( Button == GLUT_RIGHT_BUTTON)
-        {
+        } else if( Button == GLUT_RIGHT_BUTTON) {
             pan( (float)(m_LastMouseX-x)*0.01f, (float)(m_LastMouseY-y)*0.01f );
-        }
-        else if( Button == GLUT_MIDDLE_BUTTON)
-        {
+        } else if( Button == GLUT_MIDDLE_BUTTON) {
             zoom( (float)(m_LastMouseY-y)*0.01f );
             
         }
-    }
-    else
-    {
+    } else {
         m_Position += m_Panning + m_Zoom + m_Rotation;
         m_Target += m_Panning;
         m_Panning = Vector(0,0,0);
@@ -96,8 +79,7 @@ void Camera::mouseInput( int x, int y, int Button, int State)
     }
 }
 
-void Camera::pan( float dx, float dy)
-{
+void Camera::pan( float dx, float dy) {
     // calculate panning-plane
     
     Vector aDir = m_Target-m_Position;
@@ -108,14 +90,12 @@ void Camera::pan( float dx, float dy)
     m_Panning = aRight * dx + aUp * dy;
 }
 
-void Camera::zoom( float dz)
-{
+void Camera::zoom( float dz) {
     Vector aDir = m_Target-m_Position;
     float Dist = aDir.length();
     aDir.normalize();
   
-    if( Dist-dz <= 1.0f)
-    {
+    if( Dist-dz <= 1.0f) {
         m_Zoom = aDir * (Dist-1.0f);
         return;
     }
@@ -123,8 +103,7 @@ void Camera::zoom( float dz)
      m_Zoom = aDir * dz;
 }
 
-void Camera::rotate( float x, float y )
-{
+void Camera::rotate( float x, float y ) {
     Vector po = getVSpherePos((float) m_LastMouseX, (float)m_LastMouseY);
     Vector pn = getVSpherePos(x, y);
     
@@ -159,8 +138,7 @@ void Camera::rotate( float x, float y )
     m_Rotation = RotDiffW - (m_Position-m_Target);
 }
 
-Vector Camera::rotateAxisAngle( Vector v, Vector n, float a)
-{
+Vector Camera::rotateAxisAngle( Vector v, Vector n, float a) {
     float co = cos(a);
     float si = sin(a);
     
@@ -176,26 +154,22 @@ Vector Camera::rotateAxisAngle( Vector v, Vector n, float a)
 }
 
 
-Vector Camera::getVSpherePos( float x, float y)
-{
+Vector Camera::getVSpherePos( float x, float y) {
     Vector p( 1.0f*x/(float)g_WindowWidth*2.0f - 1.0f, 1.0f*y/(float)g_WindowHeight*2.0f -1.0f, 0);
     p.Y = -p.Y;
     
     float sqrLen = p.lengthSquared();
 
-    if( sqrLen <= 1.0f)
-    {
+    if( sqrLen <= 1.0f) {
         p.Z = sqrt( 1- sqrLen);
-    }
-    else
+    } else
         p.normalize();
     
     return p;
     
 }
 
-void Camera::apply()
-{
+void Camera::apply() {
     Vector Pos = getPosition(); //m_Position + m_Panning + m_Zoom + m_Rotation;
     Vector Target = getTarget(); //m_Target + m_Panning;
     

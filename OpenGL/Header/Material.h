@@ -10,12 +10,11 @@
 #define __RealtimeRending__Material__
 
 #include <iostream>
-#include "vector.h"
-#include "color.h"
+#include "../Header/vector.hpp"
+#include "../Header/color.hpp"
 #include "texture.h"
 
-class Material
-{
+class Material {
 public:
     Material( Vector kd, Vector ks, Vector ka, float ns, std::string name );
     Material();
@@ -40,7 +39,6 @@ protected:
     Texture m_DiffuseTexture;
     float m_SpecularExp;
     std::string m_Name;
-    
 };
 
 #endif /* defined(__RealtimeRending__Material__) */

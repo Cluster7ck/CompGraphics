@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-class Color{
+class Color {
 public:
     float R;
     float G;
