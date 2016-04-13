@@ -35,35 +35,30 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 
 	if (closest != NULL) {
 		Vector surfacePoint = o + d * s;
-		Vector normalSurfacePoint = closest->calcNormal(surfacePoint);		//normalisiere Dreieck am Schnittpunkt
-
-																			//Lichteinfall
-		PointLight pointLight;
-		Vector lightDir;
-		const Triangle* current;
-		float lightDist;
+		//normale vom Dreieck am Schnittpunkt
+		Vector normalSurfacePoint = closest->calcNormal(surfacePoint);
 
 		for (int i = 0; i < SceneModel.getLightCount(); i++) {
-			s = FLT_MAX;
-			pointLight = SceneModel.getLight(i);		//Aktuelles Licht
-			lightDir = pointLight.Position - surfacePoint;		//Strecke des Lichtstrahls
-			lightDist = lightDir.length();
 			bool intersects = false;
 
-			for (int j = 0; j < SceneModel.getTriangleCount(); j++) {
-				float scomp;		//Strahl, wird in triangleIntersection bearbeitet
+			PointLight pointLight = SceneModel.getLight(i);
+			//Vec surface to light
+			Vector lightDir = pointLight.Position - surfacePoint;
+			float lightDist = lightDir.length();
+			
 
-				current = &(SceneModel.getTriangle(j));
+			for (int j = 0; j < SceneModel.getTriangleCount(); j++) {
+				float s_light;
+				Triangle current = SceneModel.getTriangle(j);
 				
 				//Sichtbares Licht
-				if (surfacePoint.triangleIntersection(lightDir.normalize(), current->A, current->B, current->C, scomp) && scomp < lightDist && scomp > EPSILON) {
-					s = scomp;
+				if (surfacePoint.triangleIntersection(lightDir.normalize(), current.A, current.B, current.C, s_light) && s_light < lightDist && s_light > EPSILON) {
 					intersects = true;
 				}
 			}
 			
 			//Sichtverbindung
-			if (!intersects) {		//berechne den Lichteinfall, sonst hinter der Lichtquelle
+			if (!intersects) {
 				c += localIllumination(surfacePoint, o, normalSurfacePoint, pointLight, *closest->pMtrl);
 			}
 		}
@@ -73,6 +68,7 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 			Vector recD = d.reflection(normalSurfacePoint).normalize();
 			c += trace(SceneModel, surfacePoint, recD, depth - 1) * closest->pMtrl->getReflectivity(surfacePoint);
 		}
+		//Transmission
 	}
 
     return c;
