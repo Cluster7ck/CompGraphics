@@ -10,7 +10,6 @@
 #Own rules
 *.bmp
 *.o
-*.sln
 CompGraphics.VC.db
 OpenGL.VC.db
 OpenGL.VC.VC.opendb
