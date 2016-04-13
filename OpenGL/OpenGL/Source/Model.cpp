@@ -53,10 +53,10 @@ Model::~Model() {
 
 bool Model::load(const char* Filename, bool FitSize) {
 	//Aufgabe 1
-	//createCube();		
+	createCube();		
 
 	//Aufgabe 2
-	createObject(Filename, FitSize);
+	//createObject(Filename, FitSize);
 
     return true;
 }
