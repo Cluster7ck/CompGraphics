@@ -33,6 +33,7 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 
 Vertex::Vertex() {
@@ -80,6 +81,43 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		exit(-1);
 	}
 
+	std::string line = "";
+	int fileLength = 1;
+	int numVertices = 0;
+	int numTexCoord = 0;
+	int numFaces = 0;
+	bool bla = false;
+
+	while (std::getline(fileStream, line)) {
+
+		if (!line.empty() && line[0] != '\0' && line[0] != '#') {
+			char firstChar = line[0];
+			char secondChar = line[1];
+
+			if (firstChar == 'f') {
+				numFaces++;
+				if (numFaces > 12270) {
+					bla = true;
+				}
+			}
+			else if (firstChar == 'v') {
+				if (secondChar == 't') {
+					numTexCoord++;
+				}
+				else {
+					numVertices++;
+					if (numVertices >= 23745) {
+						bla = true;
+					}
+				}
+
+			}
+		}
+		fileLength++;
+	}
+	fileStream.clear();
+	fileStream.seekg(0, fileStream.beg);
+
 	struct Face {
 		//Position Index, Textur Index
 		unsigned int pidx[3], tidx[3];
@@ -93,19 +131,17 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	};
 	std::vector<Texcoord> vt;
 
-	const int b = 4096;
-	char buffer[b];
+	//Allocate arrays
+
 	// Ganze Zahl, die das nächste zu lesende Zeichen darstellt, oder -1, wenn keine zu lesenden Zeichen vorhanden sind.
 	while (fileStream.peek() != -1) {
 
-		fileStream.getline(&buffer[0], b);
+		std::getline(fileStream, line);
 
-		std::string lineBuffer(&buffer[0]);
-
-		const char *charPointer = lineBuffer.c_str();
+		const char *charPointer = line.c_str();
 
 		// Ueberspringe Endzeichen, Kommentare oder leere Zeilen
-		if (charPointer[0] == '\0' || charPointer[0] == '#' || lineBuffer.empty()) {
+		if (line[0] == '\0' || line[0] == '#' || line.empty()) {
 			continue;
 		}
 
@@ -117,7 +153,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 			Face secondFace;
 			unsigned int posidx[4], texidx[4];
 
-			int konverted = sscanf(charPointer, "%d/%d %d/%d %d/%d %d/%d", &posidx[0], &texidx[0], &posidx[1], &texidx[1], &posidx[2], &texidx[2], &posidx[3], &texidx[3]);
+			int converted = sscanf(charPointer, "%d/%d %d/%d %d/%d %d/%d", &posidx[0], &texidx[0], &posidx[1], &texidx[1], &posidx[2], &texidx[2], &posidx[3], &texidx[3]);
 
 			firstFace.pidx[0] = posidx[0];
 			firstFace.pidx[1] = posidx[1];
@@ -127,7 +163,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 			firstFace.tidx[2] = texidx[2];
 			f.push_back(firstFace);
 
-			if (konverted == 8) {
+			if (converted == 8) {
 				secondFace.pidx[0] = posidx[0];
 				secondFace.pidx[1] = posidx[2];
 				secondFace.pidx[2] = posidx[3];
@@ -136,10 +172,8 @@ void Model::createObject(const char* Filename, bool FitSize) {
 				secondFace.tidx[2] = texidx[3];
 				f.push_back(secondFace);
 			}
-			continue;
 		}
-
-		if (charPointer[0] == 'v') {
+		else if (charPointer[0] == 'v') {
 			// Texturkoordinaten
 			if (charPointer[1] == 't') {
 				charPointer += 3;
@@ -149,6 +183,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 				sscanf(charPointer, "%f %f", &tex.s, &tex.t);
 
 				vt.push_back(tex);
+				
 			// Eckpunkt
 			} else {
 				charPointer += 2;
@@ -159,7 +194,6 @@ void Model::createObject(const char* Filename, bool FitSize) {
 
 				v.push_back(vertex);
 			}
-			continue;
 		}
 	}
 
@@ -192,6 +226,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 			m_Box.Max.Z = vertex.Z;
 		}
 	}
+
 	// Objekt skalieren
 	if (FitSize) {
 		float scale = 7 / ((m_Box.Min - m_Box.Max).length()*2);
@@ -205,6 +240,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	m_pVertices = new Vertex[faceCount * 3];
 	m_VertexCount = faceCount * 3;
 
+	//Write vertices to indexbuffer
 	for (int i = 0; i < faceCount; i++) {
 		unsigned int PosIdx0 = f[i].pidx[0] - 1;
 		unsigned int PosIdx1 = f[i].pidx[1] - 1;
@@ -225,7 +261,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		m_pVertices[i * 3].TexcoordT = vt[TexIdx0].t;
 		m_pVertices[i * 3 + 1].TexcoordT = vt[TexIdx1].t;
 		m_pVertices[i * 3 + 2].TexcoordT = vt[TexIdx2].t;
-
+		//break at i == 12272 xy same normal = (0,0,0)  "f 23745/23745 23746/23746 23747/23747 "
 		Vector normal = (b - a).cross(c - a);
 		normal.normalize();
 
@@ -234,12 +270,13 @@ void Model::createObject(const char* Filename, bool FitSize) {
 			m_pVertices[i * 3 + 2].Normal = normal;
 	}
 	printf("Vertices:\n");
-	for (unsigned int i = 0; i<m_VertexCount; i++) {
+	printf("Count: %d", m_VertexCount);
+	/*for (unsigned int i = 0; i<m_VertexCount; i++) {
 		printf("%2i: ", i);
 		printf("p(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Position.X, m_pVertices[i].Position.Y, m_pVertices[i].Position.Z);
 		printf("n(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Normal.X, m_pVertices[i].Normal.Y, m_pVertices[i].Normal.Z);
 		printf("t(%2.1f, %2.1f)\n", m_pVertices[i].TexcoordS, m_pVertices[i].TexcoordT);
-	}
+	}*/
 
 	fileStream.close();
 }

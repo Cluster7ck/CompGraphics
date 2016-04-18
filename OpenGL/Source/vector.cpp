@@ -81,7 +81,7 @@ Vector Vector::operator-() const {
 
 Vector& Vector::normalize() {
     if(this->length() == 0) {
-            throw "Division by zero!";
+		return Vector(1, 1, 1);
     }
 	//Vector normal;
 	(*this) = (*this) * (1/this->length());

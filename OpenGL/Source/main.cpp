@@ -22,12 +22,12 @@
 #include "../Header/texture.h"
 
 // Model that should be loaded
-//const char* g_ModelToLoad = "OBJmodels/conference/conference.obj";
-//const char* g_ModelToLoad = "OBJmodels/sibenik/sibenik.obj"; //fehlerhaft
-//const char* g_ModelToLoad = "OBJmodels/sibenik/sponza.obj";
-//const char* g_ModelToLoad = "OBJmodels/sponza/sponza.obj"; //fehlerhaft
-const char* g_ModelToLoad = "OBJmodels/cube.obj";
-//const char* g_ModelToLoad = "OBJmodels/figure.obj";
+//const char* g_ModelToLoad = "OpenGL/OBJmodels/conference/conference.obj";
+//const char* g_ModelToLoad = "OpenGL/OBJmodels/sibenik/sibenik.obj"; //fehlerhaft
+//const char* g_ModelToLoad = "OpenGL/OBJmodels/sibenik/sponza.obj";
+const char* g_ModelToLoad = "OpenGL/OBJmodels/sponza/sponza.obj"; //fehlerhaft
+//const char* g_ModelToLoad = "OpenGL/OBJmodels/cube.obj";
+//const char* g_ModelToLoad = "OpenGL/OBJmodels/figure.obj";
 
 // window x and y size
 const unsigned int g_WindowWidth=1024;
@@ -72,7 +72,7 @@ int main(int argc, char * argv[]) {
     glutKeyboardFunc(KeyboardCallback);
     glutMotionFunc(MouseMoveCallback);
 
-    g_Model.load(g_ModelToLoad);
+    g_Model.load(g_ModelToLoad,false);
     
     glutMainLoop();
 }
