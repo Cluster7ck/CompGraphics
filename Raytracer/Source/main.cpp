@@ -9,9 +9,6 @@
 #include <iostream>
 #include <ctime>
 
-#include "../Header/test2.h"
-#include "../Header/test1.h"
-#include "../Header/test3.h"
 #include "../Header/color.hpp"
 #include "../Header/CGUtilities.h"
 #include "../Header/rgbimage.hpp"

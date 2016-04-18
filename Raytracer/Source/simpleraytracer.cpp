@@ -27,7 +27,7 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 		tri = &(SceneModel.getTriangle(i));
 		
         float scomp;		//Strahl, wird in triangleIntersection bearbeitet
-		if (o.triangleIntersection(d, tri->A, tri->B, tri->C, scomp) && scomp < s && scomp != 0){
+		if (o.triangleIntersection(d, tri->A, tri->B, tri->C, scomp) && scomp < s && scomp > EPSILON){
             closest = tri;
 			s = scomp;
 		}
@@ -37,7 +37,7 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 		Vector surfacePoint = o + d * s;
 		//normale vom Dreieck am Schnittpunkt
 		Vector normalSurfacePoint = closest->calcNormal(surfacePoint);
-
+		
 		for (int i = 0; i < SceneModel.getLightCount(); i++) {
 			bool intersects = false;
 
@@ -46,7 +46,7 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 			Vector lightDir = pointLight.Position - surfacePoint;
 			float lightDist = lightDir.length();
 			
-
+			//Auskommentieren, wenn kein Schatten gewünscht von
 			for (int j = 0; j < SceneModel.getTriangleCount(); j++) {
 				float s_light;
 				Triangle current = SceneModel.getTriangle(j);
@@ -56,6 +56,7 @@ Color SimpleRayTracer::trace(const Scene& SceneModel, const Vector& o, const Vec
 					intersects = true;
 				}
 			}
+			//Auskommentieren, wenn kein Schatten gewünscht bis
 			
 			//Sichtverbindung
 			if (!intersects) {

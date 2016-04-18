@@ -148,9 +148,6 @@
     <ClInclude Include="Header\color.hpp" />
     <ClInclude Include="Header\rgbimage.hpp" />
     <ClInclude Include="Header\simpleraytracer.hpp" />
-    <ClInclude Include="Header\test1.h" />
-    <ClInclude Include="Header\test2.h" />
-    <ClInclude Include="Header\test3.h" />
     <ClInclude Include="Header\vector.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,9 +157,6 @@
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\rgbimage.cpp" />
     <ClCompile Include="Source\simpleraytracer.cpp" />
-    <ClCompile Include="Source\test1.cpp" />
-    <ClCompile Include="Source\test2.cpp" />
-    <ClCompile Include="Source\test3.cpp" />
     <ClCompile Include="Source\vector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

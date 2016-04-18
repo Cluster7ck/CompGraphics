@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CA48B39B-C7F2-491C-9D53-5A756516029C}</ProjectGuid>
+    <ProjectGuid>{B088BC9D-6C76-40CB-B991-ED61D9101BCC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Aufgabenblatt03</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
