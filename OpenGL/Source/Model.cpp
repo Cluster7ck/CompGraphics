@@ -490,7 +490,7 @@ void Model::createMaterials(const char* Filename) {
 			m_pMaterials[m_MaterialCount - 1].setAmbientColor(ambColor);
 		}
 		else if (strncmp(charPointer, "map_Kd", 6) == 0) {
-			charPointer += 2;
+			charPointer += 7;
 			char textureFilename[256];
 			replaceFilename(Filename, charPointer, textureFilename);
 			m_pMaterials[m_MaterialCount - 1].setDiffuseTexture(textureFilename);
