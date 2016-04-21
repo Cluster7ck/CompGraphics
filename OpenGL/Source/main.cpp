@@ -25,7 +25,7 @@
 //const char* g_ModelToLoad = "OpenGL/OBJmodels/conference/conference.obj";
 //const char* g_ModelToLoad = "CG_P3/OBJmodels/sibenik/sibenik.obj"; //fehlerhaft
 //const char* g_ModelToLoad = "OpenGL/OBJmodels/sibenik/sponza.obj";
-const char* g_ModelToLoad = "CG_P3/OBJmodels/sponza/sponza.obj"; //fehlerhaft
+const char* g_ModelToLoad = "OBJmodels/sponza/sponza.obj"; //fehlerhaft
 //const char* g_ModelToLoad = "CG_P3/OBJmodels/cube.obj";
 //const char* g_ModelToLoad = "OpenGL/OBJmodels/figure.obj";
 

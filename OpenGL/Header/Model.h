@@ -50,7 +50,8 @@ protected:
     unsigned int m_MaterialCount;
     Vertex* m_pVertices;
     unsigned int m_VertexCount;
-    std::map<unsigned int,std::string> m_mtlMap;
+    std::map<std::string,std::vector<unsigned int>> m_mtlMap;
+	std::map<std::string, std::vector<unsigned int>>::iterator m_mtlMap_iter;
     BoundingBox m_Box;
 };
 

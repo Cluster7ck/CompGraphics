@@ -68,7 +68,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	std::ifstream fileStream(Filename);
 	if (!fileStream) {
 		std::cout << "Die Datei \"" << Filename << "\" kann nicht geoeffnet werden." << std::endl;
-		exit(-1);
+
 	}
 
 	std::string line = "";
@@ -77,6 +77,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	int numTexCoord = 0;
 	int numFaces = 0;
 
+	//Anzahl von v f vt
 	while (std::getline(fileStream, line)) {
 
 		if (!line.empty() && line[0] != '\0' && line[0] != '#') {
@@ -106,6 +107,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		//Position Index, Textur Index
 		unsigned int pidx[3], tidx[3];
 	};
+
 	std::vector<Face> f;
     f.reserve(numFaces);
 
@@ -115,8 +117,11 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	struct Texcoord {
 		float s, t;
 	};
+
 	std::vector<Texcoord> vt;
     vt.reserve(numTexCoord);
+
+	std::string lastMtl="";
 
 	// Ganze Zahl, die das nächste zu lesende Zeichen darstellt, oder -1, wenn keine zu lesenden Zeichen vorhanden sind.
 	while (fileStream.peek() != -1) {
@@ -180,14 +185,41 @@ void Model::createObject(const char* Filename, bool FitSize) {
 				v.push_back(vertex);
 			}
 		}
-        else if(strncmp(charPointer,"usemtl",6)){
+        else if(strncmp(charPointer,"usemtl",6) == 0){
             charPointer += 7;
-            std::string valueType(charPointer);
-            m_mtlMap.emplace((f.size()-1),valueType);
+            std::string mtlName(charPointer);
+
+			m_mtlMap_iter = m_mtlMap.find(lastMtl);
+			if (mtlName.compare(lastMtl) != 0) {
+				if (m_mtlMap_iter != m_mtlMap.end()) {
+					//f.size() - 1 : last index of material before
+					m_mtlMap_iter->second.push_back(f.size() - 1);
+				}
+			}
+			else {
+				m_mtlMap_iter->second.pop_back();
+			}
+
+			m_mtlMap_iter = m_mtlMap.find(mtlName);
+
+			if (m_mtlMap_iter == m_mtlMap.end()) {
+				std::vector<unsigned int> faceIndex;
+				faceIndex.push_back(f.size());
+				m_mtlMap.emplace(mtlName, faceIndex);
+			}
+			else {
+				m_mtlMap_iter->second.push_back(f.size());
+			}
+			lastMtl = mtlName;
         }
 	}
     
-    
+    //Close out last material
+	m_mtlMap_iter = m_mtlMap.find(lastMtl);
+	if(m_mtlMap_iter != m_mtlMap.end()) {
+		//f.size() - 1 : last index of material before
+		m_mtlMap_iter->second.push_back(f.size() - 1);
+	}
 
 	// BoundingBox 
 	m_Box.Max.X = m_Box.Min.X = v[0].X;
@@ -270,6 +302,14 @@ void Model::createObject(const char* Filename, bool FitSize) {
 			m_pVertices[i * 3 + 2].Normal = normal;
 	}
 	printf("Vertices:\n");
+	for (auto const &itMap : m_mtlMap) {
+		std::cout << " name: " << itMap.first <<std::endl;
+		std::cout << "{";
+		for (int i = 0; i < itMap.second.size(); i++) {
+			std::cout << itMap.second[i] << " ";
+		}
+		std::cout << "}" << std::endl;
+	}
 	printf("Count: %d", m_VertexCount);
 	/*for (unsigned int i = 0; i<m_VertexCount; i++) {
 		printf("%2i: ", i);
@@ -409,11 +449,7 @@ void Model::drawLines() const {
 void Model::drawTriangles() const {
     // Aufgabe 1
 	glBegin(GL_TRIANGLES);
-    
-    for(auto const &itMap : m_mtlMap) {
-        std::cout << itMap.first<< " name: " << itMap.second << std::endl;
-    }
-    
+
 	for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
