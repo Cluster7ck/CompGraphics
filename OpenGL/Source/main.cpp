@@ -23,10 +23,10 @@
 
 // Model that should be loaded
 //const char* g_ModelToLoad = "OpenGL/OBJmodels/conference/conference.obj";
-//const char* g_ModelToLoad = "OpenGL/OBJmodels/sibenik/sibenik.obj"; //fehlerhaft
+//const char* g_ModelToLoad = "CG_P3/OBJmodels/sibenik/sibenik.obj"; //fehlerhaft
 //const char* g_ModelToLoad = "OpenGL/OBJmodels/sibenik/sponza.obj";
-const char* g_ModelToLoad = "OpenGL/OBJmodels/sponza/sponza.obj"; //fehlerhaft
-//const char* g_ModelToLoad = "OpenGL/OBJmodels/cube.obj";
+const char* g_ModelToLoad = "CG_P3/OBJmodels/sponza/sponza.obj"; //fehlerhaft
+//const char* g_ModelToLoad = "CG_P3/OBJmodels/cube.obj";
 //const char* g_ModelToLoad = "OpenGL/OBJmodels/figure.obj";
 
 // window x and y size
@@ -72,7 +72,7 @@ int main(int argc, char * argv[]) {
     glutKeyboardFunc(KeyboardCallback);
     glutMotionFunc(MouseMoveCallback);
 
-    g_Model.load(g_ModelToLoad,false);
+    g_Model.load(g_ModelToLoad,true);
     
     glutMainLoop();
 }

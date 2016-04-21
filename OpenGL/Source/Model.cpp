@@ -23,17 +23,7 @@
 #include <map>
 #include <float.h>
 
-#include <cstdlib>
-#include <string>
-#include <cassert>
-#include <cmath>
-#include <cfloat>
-#include <string>
-#include <vector>
-#include <map>
 #include <fstream>
-#include <sstream>
-#include <iostream>
 
 
 Vertex::Vertex() {
@@ -86,7 +76,6 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	int numVertices = 0;
 	int numTexCoord = 0;
 	int numFaces = 0;
-	bool bla = false;
 
 	while (std::getline(fileStream, line)) {
 
@@ -96,9 +85,6 @@ void Model::createObject(const char* Filename, bool FitSize) {
 
 			if (firstChar == 'f') {
 				numFaces++;
-				if (numFaces > 12270) {
-					bla = true;
-				}
 			}
 			else if (firstChar == 'v') {
 				if (secondChar == 't') {
@@ -106,15 +92,13 @@ void Model::createObject(const char* Filename, bool FitSize) {
 				}
 				else {
 					numVertices++;
-					if (numVertices >= 23745) {
-						bla = true;
-					}
 				}
 
 			}
 		}
 		fileLength++;
 	}
+    
 	fileStream.clear();
 	fileStream.seekg(0, fileStream.beg);
 
@@ -123,21 +107,22 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		unsigned int pidx[3], tidx[3];
 	};
 	std::vector<Face> f;
+    f.reserve(numFaces);
 
 	std::vector<Vector> v;
-
+    v.reserve(numVertices);
+    
 	struct Texcoord {
 		float s, t;
 	};
 	std::vector<Texcoord> vt;
-
-	//Allocate arrays
+    vt.reserve(numTexCoord);
 
 	// Ganze Zahl, die das nächste zu lesende Zeichen darstellt, oder -1, wenn keine zu lesenden Zeichen vorhanden sind.
 	while (fileStream.peek() != -1) {
 
 		std::getline(fileStream, line);
-
+        
 		const char *charPointer = line.c_str();
 
 		// Ueberspringe Endzeichen, Kommentare oder leere Zeilen
@@ -195,7 +180,14 @@ void Model::createObject(const char* Filename, bool FitSize) {
 				v.push_back(vertex);
 			}
 		}
+        else if(strncmp(charPointer,"usemtl",6)){
+            charPointer += 7;
+            std::string valueType(charPointer);
+            m_mtlMap.emplace((f.size()-1),valueType);
+        }
 	}
+    
+    
 
 	// BoundingBox 
 	m_Box.Max.X = m_Box.Min.X = v[0].X;
@@ -236,12 +228,12 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	}
 
 	// Eckpunkte und Materialien zusammenstellen
-	int faceCount = (int)f.size();
+	unsigned int faceCount = (unsigned int)f.size();
 	m_pVertices = new Vertex[faceCount * 3];
 	m_VertexCount = faceCount * 3;
 
 	//Write vertices to indexbuffer
-	for (int i = 0; i < faceCount; i++) {
+	for (unsigned int i = 0; i < faceCount; i++) {
 		unsigned int PosIdx0 = f[i].pidx[0] - 1;
 		unsigned int PosIdx1 = f[i].pidx[1] - 1;
 		unsigned int PosIdx2 = f[i].pidx[2] - 1;
@@ -263,7 +255,15 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		m_pVertices[i * 3 + 2].TexcoordT = vt[TexIdx2].t;
 		//break at i == 12272 xy same normal = (0,0,0)  "f 23745/23745 23746/23746 23747/23747 "
 		Vector normal = (b - a).cross(c - a);
-		normal.normalize();
+        
+        if(normal.length() == 0){
+            std::cout << "fehlerfall" <<std::endl;
+            normal = Vector(1,0,0);
+        }
+        else{
+            normal.normalize(); 
+        }
+		
 
 		m_pVertices[i * 3].Normal =
 			m_pVertices[i * 3 + 1].Normal =
@@ -277,8 +277,8 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		printf("n(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Normal.X, m_pVertices[i].Normal.Y, m_pVertices[i].Normal.Z);
 		printf("t(%2.1f, %2.1f)\n", m_pVertices[i].TexcoordS, m_pVertices[i].TexcoordT);
 	}*/
-
-	fileStream.close();
+    fileStream.close();
+	
 }
 
 void Model::createCube() {
@@ -409,7 +409,11 @@ void Model::drawLines() const {
 void Model::drawTriangles() const {
     // Aufgabe 1
 	glBegin(GL_TRIANGLES);
-
+    
+    for(auto const &itMap : m_mtlMap) {
+        std::cout << itMap.first<< " name: " << itMap.second << std::endl;
+    }
+    
 	for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
@@ -419,6 +423,20 @@ void Model::drawTriangles() const {
 
 	glEnd();
 }
+
+/*void Model::drawTriangles() const {
+ // Aufgabe 1
+	glBegin(GL_TRIANGLES);
+ 
+	for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
+ for (int j = 0; j < 3; j++) {
+ glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
+ glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
+ }
+	}
+ 
+	glEnd();
+ }*/
 
 
 
