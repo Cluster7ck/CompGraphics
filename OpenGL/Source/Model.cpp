@@ -17,17 +17,9 @@
 #endif
 
 #include "../Header/Model.h"
-#include <vector>
-#include <assert.h>
-#include <math.h>
-#include <map>
-#include <float.h>
-
-#include <fstream>
 
 
 Vertex::Vertex() {
-    
 }
 
 Vertex::Vertex( const Vector& p, const Vector& n, float TexS, float TexT) {
@@ -212,6 +204,20 @@ void Model::createObject(const char* Filename, bool FitSize) {
 			}
 			lastMtl = mtlName;
         }
+		else if (strncmp(charPointer, "mtllib", 6) == 0) {
+			/**/
+			charPointer += 7;
+			
+			char mtlFilename[256];
+			/*strcpy(mtlFilename, Filename);
+			//Last occurence of slash
+			char* backslashPointer = strrchr(mtlFilename, '/');
+			//copy material filename behind slash
+			strcpy(backslashPointer+1,charPointer);
+			*/
+			replaceFilename(Filename, charPointer, mtlFilename);
+			createMaterials(mtlFilename);
+		}
 	}
     
     //Close out last material
@@ -421,7 +427,77 @@ void Model::createCube() {
     }
 }
 
+void Model::createMaterials(const char* Filename) {
+	std::ifstream fileStream(Filename);
+	if (!fileStream) {
+		std::cout << "Die Datei \"" << Filename << "\" kann nicht geoeffnet werden." << std::endl;
 
+	}
+
+	std::string line = "";
+	int mtlCount = 0;
+	while (std::getline(fileStream, line)) {
+		const char* charPointer = line.c_str();
+		if (strncmp(charPointer, "newmtl", 6) == 0) {
+			mtlCount++;
+		}
+	}
+	fileStream.clear();
+	fileStream.seekg(0, fileStream.beg);
+
+	m_pMaterials = new Material[mtlCount];
+
+	while (std::getline(fileStream, line)) {
+
+		const char* charPointer = line.c_str();
+
+		if (line[0] == '\0' || line[0] == '#' || line.empty()) {
+			continue;
+		}
+
+		if (strncmp(charPointer, "newmtl", 6) == 0) {
+			charPointer += 7;
+			//m_pMaterials[m_MaterialCount] = *(new Material());
+			m_pMaterials[m_MaterialCount].setName(charPointer);
+			m_MaterialCount++;
+		}
+		else if (strncmp(charPointer,"Kd",2)) {
+			charPointer += 2;
+			Color diffColor;
+			sscanf(charPointer, "%f %f %f", &diffColor.R, &diffColor.G, &diffColor.B);
+			m_pMaterials[m_MaterialCount - 1].setDiffuseColor(diffColor);
+		}
+		else if (strncmp(charPointer, "Ks", 2)) {
+			charPointer += 2;
+			Color specColor;
+			sscanf(charPointer, "%f %f %f", &specColor.R, &specColor.G, &specColor.B);
+			m_pMaterials[m_MaterialCount - 1].setSpecularColor(specColor);
+		}
+		else if (strncmp(charPointer, "Ns", 2)) {
+			charPointer += 2;
+			float specExp;
+			sscanf(charPointer, "%f", &specExp);
+			m_pMaterials[m_MaterialCount - 1].setSpecularExponent(specExp);
+		}
+		else if (strncmp(charPointer, "Ka", 2)) {
+			charPointer += 2;
+			Color ambColor;
+			sscanf(charPointer, "%f %f %f", &ambColor.R, &ambColor.G, &ambColor.B);
+			m_pMaterials[m_MaterialCount - 1].setAmbientColor(ambColor);
+		}
+		else if (strncmp(charPointer, "map_Kd", 6)) {
+			charPointer += 2;
+			char textureFilename[256];
+			replaceFilename(Filename, charPointer, textureFilename);
+			m_pMaterials[m_MaterialCount - 1].setDiffuseTexture(textureFilename);
+		}
+
+	}
+
+	for (int i = 0; i < m_MaterialCount; i++) {
+		std::cout << m_pMaterials[i].getName() << std::endl;
+	}
+}
 
 const BoundingBox& Model::boundingBox() const {
     return m_Box;
@@ -474,5 +550,11 @@ void Model::drawTriangles() const {
 	glEnd();
  }*/
 
-
-
+void Model::replaceFilename(const char* Filename,const char* replacer,char* destination) {
+	char charPointer;
+	strcpy(destination, Filename);
+	//Last occurence of slash
+	char* backslashPointer = strrchr(destination, '/');
+	//copy material filename behind slash
+	strcpy(backslashPointer + 1, replacer);
+}

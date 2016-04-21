@@ -12,10 +12,17 @@
 #include <iostream>
 #include "../Header/vector.hpp"
 #include "../Header/color.hpp"
+
 #include <string>
 #include <map>
 #include <vector>
+#include <fstream>
+
+#include <assert.h>
+#include <math.h>
+#include <float.h>
 #include "material.h"
+
 
 struct Vertex {
     Vertex();
@@ -46,6 +53,9 @@ public:
 protected:
     void createCube();
 	void createObject(const char* filename, bool fitSize);
+	void createMaterials(const char* filename);
+	void replaceFilename(const char* Filename, const char* replacer, char* destination);
+
     Material* m_pMaterials;
     unsigned int m_MaterialCount;
     Vertex* m_pVertices;
