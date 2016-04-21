@@ -23,6 +23,7 @@ public:
     const Color& getSpecularColor() const;
     const Color& getAmbientColor() const;
     float getSpecularExponent() const;
+	const Texture& getTexture() const;
     const std::string& getName() const;
     
     void setDiffuseColor( const Color& color);

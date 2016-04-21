@@ -18,6 +18,7 @@
 
 #include "../Header/Model.h"
 
+void setMaterial(Material m);
 
 Vertex::Vertex() {
 }
@@ -308,6 +309,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 			m_pVertices[i * 3 + 2].Normal = normal;
 	}
 	printf("Vertices:\n");
+	//print mtl with index
 	for (auto const &itMap : m_mtlMap) {
 		std::cout << " name: " << itMap.first <<std::endl;
 		std::cout << "{";
@@ -448,6 +450,8 @@ void Model::createMaterials(const char* Filename) {
 	m_pMaterials = new Material[mtlCount];
 
 	while (std::getline(fileStream, line)) {
+		//remove tabs
+		line.erase(std::remove(line.begin(), line.end(), '\t'), line.end());
 
 		const char* charPointer = line.c_str();
 
@@ -461,31 +465,31 @@ void Model::createMaterials(const char* Filename) {
 			m_pMaterials[m_MaterialCount].setName(charPointer);
 			m_MaterialCount++;
 		}
-		else if (strncmp(charPointer,"Kd",2)) {
+		else if (strncmp(charPointer,"Kd",2) == 0) {
 			charPointer += 2;
 			Color diffColor;
 			sscanf(charPointer, "%f %f %f", &diffColor.R, &diffColor.G, &diffColor.B);
 			m_pMaterials[m_MaterialCount - 1].setDiffuseColor(diffColor);
 		}
-		else if (strncmp(charPointer, "Ks", 2)) {
+		else if (strncmp(charPointer, "Ks", 2) == 0) {
 			charPointer += 2;
 			Color specColor;
 			sscanf(charPointer, "%f %f %f", &specColor.R, &specColor.G, &specColor.B);
 			m_pMaterials[m_MaterialCount - 1].setSpecularColor(specColor);
 		}
-		else if (strncmp(charPointer, "Ns", 2)) {
+		else if (strncmp(charPointer, "Ns", 2) == 0) {
 			charPointer += 2;
 			float specExp;
 			sscanf(charPointer, "%f", &specExp);
 			m_pMaterials[m_MaterialCount - 1].setSpecularExponent(specExp);
 		}
-		else if (strncmp(charPointer, "Ka", 2)) {
+		else if (strncmp(charPointer, "Ka", 2) == 0) {
 			charPointer += 2;
 			Color ambColor;
 			sscanf(charPointer, "%f %f %f", &ambColor.R, &ambColor.G, &ambColor.B);
 			m_pMaterials[m_MaterialCount - 1].setAmbientColor(ambColor);
 		}
-		else if (strncmp(charPointer, "map_Kd", 6)) {
+		else if (strncmp(charPointer, "map_Kd", 6) == 0) {
 			charPointer += 2;
 			char textureFilename[256];
 			replaceFilename(Filename, charPointer, textureFilename);
@@ -493,7 +497,7 @@ void Model::createMaterials(const char* Filename) {
 		}
 
 	}
-
+	fileStream.close();
 	for (int i = 0; i < m_MaterialCount; i++) {
 		std::cout << m_pMaterials[i].getName() << std::endl;
 	}
@@ -522,7 +526,7 @@ void Model::drawLines() const {
 	glEnd();
 }
 
-void Model::drawTriangles() const {
+void Model::drawTrianglesOld() const {
     // Aufgabe 1
 	glBegin(GL_TRIANGLES);
 
@@ -536,19 +540,33 @@ void Model::drawTriangles() const {
 	glEnd();
 }
 
-/*void Model::drawTriangles() const {
+void Model::drawTriangles() const {
  // Aufgabe 1
-	glBegin(GL_TRIANGLES);
- 
-	for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
- for (int j = 0; j < 3; j++) {
- glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
- glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
- }
+	//Draw Triangles for every Material
+	for (auto const &itMap : m_mtlMap) {
+
+		Material currentMaterial;
+		for (int k = 0; k < m_MaterialCount; k++) {
+			if (itMap.first.compare(m_pMaterials[k].getName()) ==  0) {
+				currentMaterial = m_pMaterials[k];
+			}
+		}
+		setMaterial(currentMaterial);
+
+		//itMap.second is vector of face indices || indeces are in pairs x --- y => i=i+2
+		glBegin(GL_TRIANGLES);
+		for (int n = 0; n < itMap.second.size(); n=n+2) {
+			for (unsigned int i = itMap.second[n]; i <= itMap.second[n + 1]; i++) {
+				for (int j = 0; j < 3; j++) {
+					glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
+					glTexCoord2f(m_pVertices[i * 3 + j].TexcoordS, m_pVertices[i * 3 + j].TexcoordT);
+					glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
+				}
+			}
+		}
+		glEnd();
 	}
- 
-	glEnd();
- }*/
+ }
 
 void Model::replaceFilename(const char* Filename,const char* replacer,char* destination) {
 	char charPointer;
@@ -557,4 +575,21 @@ void Model::replaceFilename(const char* Filename,const char* replacer,char* dest
 	char* backslashPointer = strrchr(destination, '/');
 	//copy material filename behind slash
 	strcpy(backslashPointer + 1, replacer);
+}
+
+void setMaterial(Material mtl) {
+	
+	float diff[4];
+	float spec[4];
+	float amb[4];
+	int specExp = ((int)mtl.getSpecularExponent() >= 0) ? (int)mtl.getSpecularExponent() : 0;
+	mtl.getDiffuseColor().convert(diff);
+	mtl.getSpecularColor().convert(spec);
+	mtl.getAmbientColor().convert(amb);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diff);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
+	glMateriali(GL_FRONT, GL_SHININESS, specExp);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
+
+	mtl.getTexture().apply();
 }

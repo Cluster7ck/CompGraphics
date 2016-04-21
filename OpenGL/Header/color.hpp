@@ -23,6 +23,8 @@ public:
     Color operator*(const float Factor) const;
     Color operator+(const Color& c) const;
     Color& operator+=(const Color& c);
+	void convert(float* arr) const;
+
 };
 
 #endif /* color_hpp */

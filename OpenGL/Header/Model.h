@@ -17,6 +17,7 @@
 #include <map>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 #include <assert.h>
 #include <math.h>
@@ -48,7 +49,8 @@ public:
     const BoundingBox& boundingBox() const;
     bool load( const char* Filename, bool FitSize=true);
     void drawLines() const;
-    void drawTriangles() const;
+    void drawTrianglesOld() const;
+	void drawTriangles() const;
 
 protected:
     void createCube();

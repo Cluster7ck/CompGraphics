@@ -58,3 +58,10 @@ Color& Color::operator+=(const Color& c) {
     
     return *this;
 }
+
+void Color::convert(float* arr) const{
+	arr[0] = this->R;
+	arr[1] = this->G;
+	arr[2] = this->B;
+	arr[3] = 1;
+}

@@ -35,6 +35,10 @@ float Material::getSpecularExponent() const {
     return m_SpecularExp;
 }
 
+const Texture& Material::getTexture() const {
+	return m_DiffuseTexture;
+}
+
 const std::string& Material::getName() const {
     return m_Name;
 }
