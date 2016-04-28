@@ -497,8 +497,8 @@ const BoundingBox& Model::boundingBox() const {
 }
 
 void Model::drawLines() const {
+	glColor3f(0.60, 0.20, 0.60);
 	glBegin(GL_LINES);
-	glColor3f(0.60, 0.20, 0.60);		//rgb(60%,20%,60%) = violette
 
 	for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -515,8 +515,8 @@ void Model::drawLines() const {
 }
 
 void Model::drawTriangles() const {
+
 	//Draw Triangles for every Material
-    
     if(m_mtlMap.empty()){
         glBegin(GL_TRIANGLES);
         
@@ -554,7 +554,7 @@ void Model::drawTriangles() const {
             glEnd();
         }
     }
-}
+ }
 
 void Model::replaceFilename(const char* Filename,const char* replacer,char* destination) {
 	char charPointer;
