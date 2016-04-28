@@ -48,10 +48,10 @@ Model::~Model() {
 }
 
 bool Model::load(const char* Filename, bool FitSize) {
-	//Aufgabe 1
+	// Blatt 3 Aufgabe 1
 	//createCube();		
 
-	//Aufgabe 2
+	// Blatt 3 Aufgabe 2
 	createObject(Filename, FitSize);
 
     return true;
@@ -61,7 +61,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	std::ifstream fileStream(Filename);
 	if (!fileStream) {
 		std::cout << "Die Datei \"" << Filename << "\" kann nicht geoeffnet werden." << std::endl;
-
+		exit(-1);
 	}
 
 	std::string line = "";
@@ -206,16 +206,9 @@ void Model::createObject(const char* Filename, bool FitSize) {
 			lastMtl = mtlName;
         }
 		else if (strncmp(charPointer, "mtllib", 6) == 0) {
-			/**/
 			charPointer += 7;
 			
 			char mtlFilename[256];
-			/*strcpy(mtlFilename, Filename);
-			//Last occurence of slash
-			char* backslashPointer = strrchr(mtlFilename, '/');
-			//copy material filename behind slash
-			strcpy(backslashPointer+1,charPointer);
-			*/
 			replaceFilename(Filename, charPointer, mtlFilename);
 			createMaterials(mtlFilename);
 		}
@@ -313,7 +306,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	for (auto const &itMap : m_mtlMap) {
 		std::cout << " name: " << itMap.first <<std::endl;
 		std::cout << "{";
-		for (int i = 0; i < itMap.second.size(); i++) {
+		for (unsigned int i = 0; i < itMap.second.size(); i++) {
 			std::cout << itMap.second[i] << " ";
 		}
 		std::cout << "}" << std::endl;
@@ -421,12 +414,12 @@ void Model::createCube() {
     }
     
     printf( "Vertices:\n");
-    for( unsigned int i=0; i<m_VertexCount; i++) {
+    /*for( unsigned int i=0; i<m_VertexCount; i++) {
         printf( "%2i: ", i);
         printf( "p(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Position.X, m_pVertices[i].Position.Y, m_pVertices[i].Position.Z );
         printf( "n(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Normal.X, m_pVertices[i].Normal.Y, m_pVertices[i].Normal.Z );
         printf( "t(%2.1f, %2.1f)\n", m_pVertices[i].TexcoordS, m_pVertices[i].TexcoordT );  
-    }
+    }*/
 }
 
 void Model::createMaterials(const char* Filename) {
@@ -461,7 +454,6 @@ void Model::createMaterials(const char* Filename) {
 
 		if (strncmp(charPointer, "newmtl", 6) == 0) {
 			charPointer += 7;
-			//m_pMaterials[m_MaterialCount] = *(new Material());
 			m_pMaterials[m_MaterialCount].setName(charPointer);
 			m_MaterialCount++;
 		}
@@ -498,9 +490,6 @@ void Model::createMaterials(const char* Filename) {
 
 	}
 	fileStream.close();
-	for (int i = 0; i < m_MaterialCount; i++) {
-		std::cout << m_pMaterials[i].getName() << std::endl;
-	}
 }
 
 const BoundingBox& Model::boundingBox() const {
@@ -508,9 +497,8 @@ const BoundingBox& Model::boundingBox() const {
 }
 
 void Model::drawLines() const {
-    // Aufgabe 1
-	glColor3f(0.60, 0.20, 0.60);		//rgb(60%,20%,60%) = violette
 	glBegin(GL_LINES);
+	glColor3f(0.60, 0.20, 0.60);		//rgb(60%,20%,60%) = violette
 
 	for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -526,47 +514,47 @@ void Model::drawLines() const {
 	glEnd();
 }
 
-void Model::drawTrianglesOld() const {
-    // Aufgabe 1
-	glBegin(GL_TRIANGLES);
-
-	for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
-			glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
-		}
-	}
-
-	glEnd();
-}
-
 void Model::drawTriangles() const {
- // Aufgabe 1
 	//Draw Triangles for every Material
-	for (auto const &itMap : m_mtlMap) {
-
-		Material currentMaterial;
-		for (int k = 0; k < m_MaterialCount; k++) {
-			if (itMap.first.compare(m_pMaterials[k].getName()) ==  0) {
-				currentMaterial = m_pMaterials[k];
-			}
-		}
-		setMaterial(currentMaterial);
-
-		//itMap.second is vector of face indices || indeces are in pairs x --- y => i=i+2
-		glBegin(GL_TRIANGLES);
-		for (int n = 0; n < itMap.second.size(); n=n+2) {
-			for (unsigned int i = itMap.second[n]; i <= itMap.second[n + 1]; i++) {
-				for (int j = 0; j < 3; j++) {
-					glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
-					glTexCoord2f(m_pVertices[i * 3 + j].TexcoordS, m_pVertices[i * 3 + j].TexcoordT);
-					glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
-				}
-			}
-		}
-		glEnd();
-	}
- }
+    
+    if(m_mtlMap.empty()){
+        glBegin(GL_TRIANGLES);
+        
+        for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
+                glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
+            }
+        }
+        
+        glEnd();
+    }
+    else{
+        for (auto const &itMap : m_mtlMap) {
+            
+            Material currentMaterial;
+            for (unsigned int k = 0; k < m_MaterialCount; k++) {
+                if (itMap.first.compare(m_pMaterials[k].getName()) ==  0) {
+                    currentMaterial = m_pMaterials[k];
+                }
+            }
+            setMaterial(currentMaterial);
+            
+            //itMap.second is vector of face indices || indeces are in pairs x --- y => i=i+2
+            glBegin(GL_TRIANGLES);
+            for (unsigned int n = 0; n < itMap.second.size(); n+=2) {
+                for (unsigned int i = itMap.second[n]; i <= itMap.second[n + 1]; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
+                        glTexCoord2f(m_pVertices[i * 3 + j].TexcoordS, m_pVertices[i * 3 + j].TexcoordT);
+                        glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
+                    }
+                }
+            }
+            glEnd();
+        }
+    }
+}
 
 void Model::replaceFilename(const char* Filename,const char* replacer,char* destination) {
 	char charPointer;

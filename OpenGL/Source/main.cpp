@@ -5,39 +5,34 @@
 //  Created by Philipp Lensing on 22.10.14.
 //  Copyright (c) 2014 Philipp Lensing. All rights reserved.
 //
-
 #include <iostream>
-#include <math.h>
+
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #ifdef WIN32
-	#include <windows.h>
 	#include <GL/glew.h>
 	#include <GL/GLUT.h>
 	#include <GL/GL.h>
 #else
-	#include <OpenGL/OpenGL.h>
 	#include <GLUT/GLUT.h>
+	#include <OpenGL/OpenGL.h>
 #endif
 #include "../Header/Camera.h"
 #include "../Header/model.h"
-#include "../Header/texture.h"
+#include "../Header/matrix.h"
 
-// Model that should be loaded
-//const char* g_ModelToLoad = "OpenGL/OBJmodels/conference/conference.obj";
-const char* g_ModelToLoad = "OBJmodels/sibenik/sibenik.obj"; //fehlerhaft
-//const char* g_ModelToLoad = "OBJmodels/OBJmodels/sibenik/sponza.obj";
-//const char* g_ModelToLoad = "OBJmodels/sponza/sponza.obj"; //fehlerhaft
-//const char* g_ModelToLoad = "CG_P3/OBJmodels/cube.obj";
-//const char* g_ModelToLoad = "OpenGL/OBJmodels/figure.obj";
-
-// window x and y size
 const unsigned int g_WindowWidth=1024;
 const unsigned int g_WindowHeight=768;
-
-// light position (point light)
-const Vector g_LightPos = Vector( 0,4,0);
+const Vector g_LightPos = Vector( 0,15,0);
 
 Camera g_Camera;
+
 Model g_Model;
+
+float deltaTime = 0;
+int elapsedTimeLastFrame = 0;
+
 int g_MouseButton = 0;
 int g_MouseState = 0;
 
@@ -46,14 +41,9 @@ void DrawScene();
 void MouseCallback(int Button, int State, int x, int y);
 void MouseMoveCallback(int x, int y);
 void KeyboardCallback( unsigned char key, int x, int y);
-
-enum RenderMode {
-    RENDERMODE_LINES,
-    RENDERMODE_TRIANGLES,
-    LAST_RENDERMODE
-};
-
-RenderMode g_RenderMode = RENDERMODE_LINES;
+void MousePassiveMoveCallback( int x, int y);
+void SpecialKeyboardCallback( int key, int x, int y);
+void SpecialKeyboardUpCallback( int key, int x, int y);
 
 int main(int argc, char * argv[]) {
     // initialize the glut system and create a window
@@ -61,9 +51,6 @@ int main(int argc, char * argv[]) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutCreateWindow("CG Praktikum");
-#ifdef WIN32
-	glewInit();
-#endif
     
     SetupDefaultGLSettings();
     
@@ -71,8 +58,11 @@ int main(int argc, char * argv[]) {
     glutMouseFunc(MouseCallback);
     glutKeyboardFunc(KeyboardCallback);
     glutMotionFunc(MouseMoveCallback);
+    glutPassiveMotionFunc(MousePassiveMoveCallback);
+    glutSpecialFunc(SpecialKeyboardCallback);
+    glutSpecialUpFunc(SpecialKeyboardUpCallback);
 
-    g_Model.load(g_ModelToLoad,true);
+    g_Model.load("OBJmodels/p4_modelle/tank.obj", true);
     
     glutMainLoop();
 }
@@ -86,7 +76,6 @@ void SetupDefaultGLSettings() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(65, (double)g_WindowWidth/(double)g_WindowHeight, 0.045f, 1000.0f);
-    
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
  
@@ -110,6 +99,7 @@ void SetupDefaultGLSettings() {
     glShadeModel(GL_SMOOTH);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    glEnable(GL_NORMALIZE);
 }
 
 void DrawGroundGrid() {
@@ -143,33 +133,56 @@ void MouseMoveCallback( int x, int y) {
     g_Camera.mouseInput(x,y,g_MouseButton,g_MouseState);
 }
 
-void KeyboardCallback( unsigned char key, int x, int y) {
-    if( key == 'l')
-        g_RenderMode=RENDERMODE_LINES;
-    else if( key == 't')
-        g_RenderMode=RENDERMODE_TRIANGLES; 
+void MousePassiveMoveCallback( int x, int y) {
+    // function is called if the mouse moves without pressing any button.
 }
 
+void KeyboardCallback( unsigned char key, int x, int y) {
+    // function is called if a regular keyboard button is pressed
+}
+
+void SpecialKeyboardCallback( int key, int x, int y) {
+    // function is called if a special keyboard button is pressed (e. g. Up-arrow-Key)
+}
+
+void SpecialKeyboardUpCallback( int key, int x, int y) {
+    // function is called if a special keyboard button is released
+}
+
+void TransformAndDrawTank() {
+    static float Angle=0;
+	// M_PI/180 = degree to rad factor
+    Angle += 90*deltaTime * M_PI/180;
+
+	Matrix mt, mr1, mr2;
+	mt.translation(3,0,0);
+	mr1.rotationY(Angle);
+	mr2.rotationY(90 * M_PI / 180);
+
+	Matrix g = mr1 * mt * mr2;
+    glPushMatrix();
+	glMultMatrixf(g);
+    g_Model.drawTriangles();
+    glPopMatrix();
+}
 
 void DrawScene() {
+    deltaTime = (glutGet(GLUT_ELAPSED_TIME) - elapsedTimeLastFrame)/1000.0;
+    elapsedTimeLastFrame = glutGet(GLUT_ELAPSED_TIME);
+    
+    std::cout << "deltaTime: " << deltaTime << " elapsedTimeLastFrame: " << elapsedTimeLastFrame << std::endl;
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glLoadIdentity();
-    g_Camera.apply();
-    
-    DrawGroundGrid();
-    
     GLfloat lpos[4];
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
-
-    if(g_RenderMode == RENDERMODE_LINES) {
-        glDisable(GL_LIGHTING);
-        g_Model.drawLines();
-        glEnable(GL_LIGHTING);
-    } else if(g_RenderMode== RENDERMODE_TRIANGLES)
-        g_Model.drawTriangles();
     
+    g_Camera.apply();
+    TransformAndDrawTank();
+    DrawGroundGrid();
+    
+    // call your tank & Scene class-members here
+
     glutSwapBuffers();
-    glutPostRedisplay();  
+    glutPostRedisplay();
 }
