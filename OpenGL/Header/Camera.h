@@ -11,14 +11,13 @@
 
 #include <iostream>
 
-#include "vector.hpp"
-#include "matrix.h"
+#include "../Header/vector.h"
+#include "../Header/matrix.h"
 
 extern const unsigned int g_WindowWidth;
 extern const unsigned int g_WindowHeight;
 
-class Camera
-{
+class Camera {
 public:
     Camera();
     Camera(Vector& Pos, Vector& Target, Vector& Up);
@@ -54,6 +53,5 @@ protected:
     int m_LastMouseX;
     int m_LastMouseY;
 };
-
 
 #endif /* defined(__RealtimeRending__Camera__) */

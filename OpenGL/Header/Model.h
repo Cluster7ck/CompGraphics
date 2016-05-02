@@ -10,8 +10,8 @@
 #define __RealtimeRending__Model__
 
 #include <iostream>
-#include "../Header/vector.hpp"
-#include "../Header/color.hpp"
+#include "../Header/vector.h"
+#include "../Header/color.h"
 
 #include <string>
 #include <map>
@@ -49,7 +49,6 @@ public:
     const BoundingBox& boundingBox() const;
     bool load( const char* Filename, bool FitSize=true);
     void drawLines() const;
-    void drawTrianglesOld() const;
 	void drawTriangles() const;
 
 protected:

@@ -10,8 +10,8 @@
 #define __RealtimeRending__Material__
 
 #include <iostream>
-#include "../Header/vector.hpp"
-#include "../Header/color.hpp"
+#include "../Header/vector.h"
+#include "../Header/color.h"
 #include "texture.h"
 
 class Material {

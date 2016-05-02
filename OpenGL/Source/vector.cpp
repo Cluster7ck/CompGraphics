@@ -6,7 +6,7 @@
 //  Copyright © 2016 hsos. All rights reserved.
 //
 
-#include "../Header/vector.hpp"
+#include "../Header/vector.h"
 
 Vector::Vector(float x, float y, float z) {
     X = x;

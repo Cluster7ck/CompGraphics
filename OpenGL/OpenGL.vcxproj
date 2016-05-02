@@ -143,12 +143,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Header\Camera.h" />
-    <ClInclude Include="Header\color.hpp" />
+    <ClInclude Include="Header\color.h" />
     <ClInclude Include="Header\Material.h" />
     <ClInclude Include="Header\Matrix.h" />
     <ClInclude Include="Header\Model.h" />
+    <ClInclude Include="Header\scene.h" />
+    <ClInclude Include="Header\sceneNode.h" />
+    <ClInclude Include="Header\tank.h" />
     <ClInclude Include="Header\Texture.h" />
-    <ClInclude Include="Header\vector.hpp" />
+    <ClInclude Include="Header\vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Camera.cpp" />
@@ -157,6 +160,9 @@
     <ClCompile Include="Source\Material.cpp" />
     <ClCompile Include="Source\Matrix.cpp" />
     <ClCompile Include="Source\Model.cpp" />
+    <ClCompile Include="Source\scene.cpp" />
+    <ClCompile Include="Source\sceneNode.cpp" />
+    <ClCompile Include="Source\tank.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
     <ClCompile Include="Source\vector.cpp" />
   </ItemGroup>

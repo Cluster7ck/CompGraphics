@@ -6,13 +6,12 @@
 //  Copyright © 2016 hsos. All rights reserved.
 //
 
-#include "../Header/color.hpp"
+#include "../Header/color.h"
 
 Color::Color() {
     R = 0;
     G = 0;
     B = 0;
-
 }
 
 Color::Color(float r, float g, float b) {

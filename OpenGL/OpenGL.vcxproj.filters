@@ -18,9 +18,6 @@
     <ClInclude Include="Header\Camera.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Header\color.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Material.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -30,10 +27,22 @@
     <ClInclude Include="Header\Texture.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Header\vector.hpp">
+    <ClInclude Include="Header\Matrix.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Header\Matrix.h">
+    <ClInclude Include="Header\color.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\scene.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\sceneNode.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\tank.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\vector.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -60,6 +69,15 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Matrix.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\scene.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\sceneNode.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\tank.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

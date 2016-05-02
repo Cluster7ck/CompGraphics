@@ -12,8 +12,7 @@
 
 #define WEAK_EPSILON 1e-4
 
-Matrix::Matrix()
-{
+Matrix::Matrix() {
     
 }
 
@@ -24,38 +23,31 @@ Matrix::Matrix( float _00, float _01, float _02, float _03,
     m00(_00), m01(_01), m02(_02), m03(_03),
     m10(_10), m11(_11), m12(_12), m13(_13),
     m20(_20), m21(_21), m22(_22), m23(_23),
-    m30(_30), m31(_31), m32(_32), m33(_33)
-{
+    m30(_30), m31(_31), m32(_32), m33(_33) {
 }
 
-Matrix::operator float*()
-{
+Matrix::operator float*() {
     return m;
 }
-Matrix::operator const float* const()
-{
+Matrix::operator const float* const() {
     return m;
 }
 
-Matrix Matrix::operator*(const Matrix& M) const
-{
+Matrix Matrix::operator*(const Matrix& M) const {
     Matrix Out = *this;
     Out.multiply(M);
     return Out;
 }
-Matrix& Matrix::operator*=(const Matrix& M)
-{
+Matrix& Matrix::operator*=(const Matrix& M) {
     multiply(M);
     return *this;
 }
 
-Vector Matrix::operator*(const Vector& v) const
-{
+Vector Matrix::operator*(const Vector& v) const {
     return transformVec4x4(v);
 }
 
-bool Matrix::operator==(const Matrix& M)
-{
+bool Matrix::operator==(const Matrix& M) {
     const float Epsilon = WEAK_EPSILON;
     return fabs(m00-M.m00)<=Epsilon && fabs(m01-M.m01)<=Epsilon && fabs(m02-M.m02)<=Epsilon && fabs(m03-M.m03)<=Epsilon &&
     fabs(m10-M.m10)<=Epsilon && fabs(m11-M.m11)<=Epsilon && fabs(m12-M.m12)<=Epsilon && fabs(m13-M.m13)<=Epsilon &&
@@ -65,8 +57,7 @@ bool Matrix::operator==(const Matrix& M)
     return false;
 }
 
-Vector Matrix::transformVec4x4( const Vector& v) const
-{
+Vector Matrix::transformVec4x4( const Vector& v) const {
     float X = m00*v.X + m01*v.Y + m02*v.Z + m03;
     float Y = m10*v.X + m11*v.Y + m12*v.Z + m13;
     float Z = m20*v.X + m21*v.Y + m22*v.Z + m23;
@@ -74,8 +65,8 @@ Vector Matrix::transformVec4x4( const Vector& v) const
     return Vector( X/W, Y/W, Z/W);
     
 }
-Vector Matrix::transformVec3x3( const Vector& v) const
-{
+
+Vector Matrix::transformVec3x3( const Vector& v) const {
     float X = m00*v.X + m01*v.Y + m02*v.Z;
     float Y = m10*v.X + m11*v.Y + m12*v.Z;
     float Z = m20*v.X + m21*v.Y + m22*v.Z;
@@ -83,69 +74,57 @@ Vector Matrix::transformVec3x3( const Vector& v) const
 }
 
 
-bool Matrix::operator!=(const Matrix& M)
-{
+bool Matrix::operator!=(const Matrix& M) {
     return !(*this==M);
 }
 
-Vector Matrix::left() const
-{
+Vector Matrix::left() const {
     return Vector(-m00, -m10, -m20);
 }
 
-Vector Matrix::right() const
-{
+Vector Matrix::right() const {
     return Vector(m00, m10, m20);
 }
 
-Vector Matrix::up() const
-{
+Vector Matrix::up() const {
     return Vector(m01, m11, m21);
 }
 
-Vector Matrix::down() const
-{
+Vector Matrix::down() const {
     return Vector(-m01, -m11, -m21);
 }
 
-Vector Matrix::forward() const
-{
+Vector Matrix::forward() const {
     return Vector(m02, m12, m22);
 }
 
-Vector Matrix::backward() const
-{
+Vector Matrix::backward() const {
     return Vector(-m02, -m12, -m22);
 }
 
-Vector Matrix::translation() const
-{
+Vector Matrix::translation() const {
     return Vector(m03, m13, m23);
 }
 
-void Matrix::up( const Vector& v)
-{
+void Matrix::up( const Vector& v) {
     m01 = v.X;
     m11 = v.Y;
     m21 = v.Z;
 }
 
-void Matrix::forward( const Vector& v)
-{
+void Matrix::forward( const Vector& v) {
     m02 = v.X;
     m12 = v.Y;
     m22 = v.Z;
 }
 
-void Matrix::right( const Vector& v)
-{
+void Matrix::right( const Vector& v) {
     m00 = v.X;
     m10 = v.Y;
     m20 = v.Z;
 }
 
-Matrix& Matrix::multiply(const Matrix& M )
-{
+Matrix& Matrix::multiply(const Matrix& M ) {
     const Matrix& A = *this;
     
     Matrix Tmp(
@@ -171,20 +150,20 @@ Matrix& Matrix::multiply(const Matrix& M )
     *this = Tmp;
     return *this;
 }
-Matrix& Matrix::translation(float X, float Y, float Z )
-{
+
+Matrix& Matrix::translation(float X, float Y, float Z ) {
     m00= 1;	m01= 0;	m02= 0;	m03= X;
     m10= 0;	m11= 1;	m12= 0;	m13= Y;
     m20= 0;	m21= 0;	m22= 1;	m23= Z;
     m30= 0;	m31= 0;	m32= 0;	m33= 1;
     return *this;
 }
-Matrix& Matrix::translation(const Vector& XYZ )
-{
+
+Matrix& Matrix::translation(const Vector& XYZ ) {
     return translation(XYZ.X, XYZ.Y, XYZ.Z);
 }
-Matrix& Matrix::rotationX(float Angle )
-{
+
+Matrix& Matrix::rotationX(float Angle ) {
     m00= 1;	m01= 0;	m02= 0;	m03= 0;
     m10= 0;					m13= 0;
     m20= 0;					m23= 0;
@@ -196,8 +175,8 @@ Matrix& Matrix::rotationX(float Angle )
     
     return *this;
 }
-Matrix& Matrix::rotationY(float Angle )
-{
+
+Matrix& Matrix::rotationY(float Angle ) {
             m01= 0;         m03= 0;
     m10= 0;	m11= 1;	m12= 0;	m13= 0;
             m21= 0;         m23= 0;
@@ -209,8 +188,8 @@ Matrix& Matrix::rotationY(float Angle )
     
     return *this;
 }
-Matrix& Matrix::rotationZ(float Angle )
-{
+
+Matrix& Matrix::rotationZ(float Angle ) {
                     m02= 0;	m03= 0;
                     m12= 0;	m13= 0;
     m20= 0;	m21= 0;	m22= 1;	m23= 0;
@@ -222,8 +201,8 @@ Matrix& Matrix::rotationZ(float Angle )
     
     return *this;
 }
-Matrix& Matrix::rotationYawPitchRoll( float Yaw, float Pitch, float Roll )
-{
+
+Matrix& Matrix::rotationYawPitchRoll( float Yaw, float Pitch, float Roll ) {
     float cosx = cos(Pitch);
     float cosy = cos(Yaw);
     float cosz = cos(Roll);
@@ -252,13 +231,13 @@ Matrix& Matrix::rotationYawPitchRoll( float Yaw, float Pitch, float Roll )
     
     return *this;
 }
-Matrix& Matrix::rotationYawPitchRoll(const Vector& Angles )
-{
+
+Matrix& Matrix::rotationYawPitchRoll(const Vector& Angles ) {
     rotationYawPitchRoll(Angles.X, Angles.Y, Angles.Z);
     return *this;
 }
-Matrix& Matrix::rotationAxis(const Vector& Axis, float Angle)
-{
+
+Matrix& Matrix::rotationAxis(const Vector& Axis, float Angle) {
     const float Si = sin(Angle);
     const float Co = cos(Angle);
     const float OMCo = 1 - Co;
@@ -287,8 +266,8 @@ Matrix& Matrix::rotationAxis(const Vector& Axis, float Angle)
     
     return *this;
 }
-Matrix& Matrix::scale(float ScaleX, float ScaleY, float ScaleZ )
-{
+
+Matrix& Matrix::scale(float ScaleX, float ScaleY, float ScaleZ ) {
     m00= ScaleX;	m01= 0;			m02= 0;			m03= 0;
     m10= 0;			m11= ScaleY;	m12= 0;			m13= 0;
     m20= 0;			m21= 0;			m22= ScaleZ;	m23= 0;
@@ -296,26 +275,26 @@ Matrix& Matrix::scale(float ScaleX, float ScaleY, float ScaleZ )
     
     return *this;
 }
-Matrix& Matrix::scale(const Vector& Scalings )
-{
+
+Matrix& Matrix::scale(const Vector& Scalings ) {
     scale( Scalings.X, Scalings.Y, Scalings.Z);
     return *this;
 }
-Matrix& Matrix::scale(float Scaling )
-{
+
+Matrix& Matrix::scale(float Scaling ) {
     scale(Scaling, Scaling, Scaling);
     return *this;
 }
-Matrix& Matrix::identity()
-{
+
+Matrix& Matrix::identity() {
     m00= 1;	m01= 0;	m02= 0;	m03= 0;
     m10= 0;	m11= 1;	m12= 0;	m13= 0;
     m20= 0;	m21= 0;	m22= 1;	m23= 0;
     m30= 0;	m31= 0;	m32= 0;	m33= 1;
     return *this;
 }
-Matrix& Matrix::transpose()
-{
+
+Matrix& Matrix::transpose() {
     Matrix Tmp(
       m00, m10, m20, m30,
       m01, m11, m21, m31,
@@ -324,8 +303,8 @@ Matrix& Matrix::transpose()
     *this = Tmp;
     return *this;
 }
-Matrix& Matrix::invert()
-{
+
+Matrix& Matrix::invert() {
     const float num5 = m00;
     const float num4 = m01;
     const float num3 = m02;
@@ -383,8 +362,8 @@ Matrix& Matrix::invert()
     m33 = (((num5 * num27) - (num4 * num25)) + (num3 * num24)) * num;
     return *this;
 }
-Matrix& Matrix::lookAt(const Vector& Target, const Vector& Up, const Vector& Position )
-{
+
+Matrix& Matrix::lookAt(const Vector& Target, const Vector& Up, const Vector& Position ) {
     Vector f = Target-Position;
     f.normalize();
     Vector u = Up;
@@ -398,8 +377,8 @@ Matrix& Matrix::lookAt(const Vector& Target, const Vector& Up, const Vector& Pos
     m30 = 0;     m31 = 0;     m32 = 0;     m33 = 1;
     return *this;
 }
-Matrix& Matrix::perspective(float Fovy, float AspectRatio, float NearPlane, float FarPlane )
-{
+
+Matrix& Matrix::perspective(float Fovy, float AspectRatio, float NearPlane, float FarPlane ) {
     assert(NearPlane<FarPlane);
     
     const float f = 1.0f/tan(Fovy*0.5f);
@@ -417,8 +396,8 @@ Matrix& Matrix::perspective(float Fovy, float AspectRatio, float NearPlane, floa
     m23 = 2.0f*FarPlane*NearPlane/NearMinusFar;
     return *this;
 }
-Matrix& Matrix::orthographic(float Width, float Height, float Near, float Far )
-{
+
+Matrix& Matrix::orthographic(float Width, float Height, float Near, float Far ) {
     float FMN = 1.0f/(Far-Near);
     m00 = 2.0f/Width;   m01 = 0.0f;         m02 = 0.0f;      m03 = 0.0f;
     m10 = 0.0f;         m11 = 2.0f/Height;  m12 = 0.0f;      m13 = 0.0f;
@@ -426,13 +405,9 @@ Matrix& Matrix::orthographic(float Width, float Height, float Near, float Far )
     m30 = 0.0f;         m31 = 0.0f;         m32 = 0.0f;      m33 = 1.0f;
     return *this;
 }
-float Matrix::determinat()
-{
+
+float Matrix::determinat(){
     return	m00 * (m11 * m22 - m12 * m21) -
     m01 * (m10 * m22 - m12 * m20) +
     m02 * (m10 * m21 - m11 * m20);
 }
-
-
-
-

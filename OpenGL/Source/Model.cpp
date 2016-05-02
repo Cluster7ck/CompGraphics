@@ -289,21 +289,18 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		Vector normal = (b - a).cross(c - a);
         
         if(normal.length() == 0){
-            std::cout << "fehlerfall" <<std::endl;
+            //std::cout << "fehlerfall" <<std::endl;
             normal = Vector(1,0,0);
-        }
-        else{
+        } else{
             normal.normalize(); 
         }
-		
-
 		m_pVertices[i * 3].Normal =
 			m_pVertices[i * 3 + 1].Normal =
 			m_pVertices[i * 3 + 2].Normal = normal;
 	}
-	printf("Vertices:\n");
+
 	//print mtl with index
-	for (auto const &itMap : m_mtlMap) {
+	/*for (auto const &itMap : m_mtlMap) {
 		std::cout << " name: " << itMap.first <<std::endl;
 		std::cout << "{";
 		for (unsigned int i = 0; i < itMap.second.size(); i++) {
@@ -312,7 +309,9 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		std::cout << "}" << std::endl;
 	}
 	printf("Count: %d", m_VertexCount);
-	/*for (unsigned int i = 0; i<m_VertexCount; i++) {
+
+	printf("Vertices:\n");
+	for (unsigned int i = 0; i<m_VertexCount; i++) {
 		printf("%2i: ", i);
 		printf("p(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Position.X, m_pVertices[i].Position.Y, m_pVertices[i].Position.Z);
 		printf("n(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Normal.X, m_pVertices[i].Normal.Y, m_pVertices[i].Normal.Z);
@@ -412,9 +411,9 @@ void Model::createCube() {
         m_pVertices[i*3+1].Normal =
         m_pVertices[i*3+2].Normal = normal;
     }
-    
+    /*
     printf( "Vertices:\n");
-    /*for( unsigned int i=0; i<m_VertexCount; i++) {
+    for( unsigned int i=0; i<m_VertexCount; i++) {
         printf( "%2i: ", i);
         printf( "p(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Position.X, m_pVertices[i].Position.Y, m_pVertices[i].Position.Z );
         printf( "n(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Normal.X, m_pVertices[i].Normal.Y, m_pVertices[i].Normal.Z );
@@ -497,8 +496,8 @@ const BoundingBox& Model::boundingBox() const {
 }
 
 void Model::drawLines() const {
-	glColor3f(0.60, 0.20, 0.60);
 	glBegin(GL_LINES);
+	glColor3f(0.60, 0.20, 0.60);		//rgb(60%,20%,60%) = violette
 
 	for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -515,46 +514,44 @@ void Model::drawLines() const {
 }
 
 void Model::drawTriangles() const {
-
 	//Draw Triangles for every Material
-    if(m_mtlMap.empty()){
-        glBegin(GL_TRIANGLES);
-        
-        for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
-                glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
-            }
-        }
-        
-        glEnd();
-    }
-    else{
-        for (auto const &itMap : m_mtlMap) {
-            
-            Material currentMaterial;
-            for (unsigned int k = 0; k < m_MaterialCount; k++) {
-                if (itMap.first.compare(m_pMaterials[k].getName()) ==  0) {
-                    currentMaterial = m_pMaterials[k];
-                }
-            }
-            setMaterial(currentMaterial);
-            
-            //itMap.second is vector of face indices || indeces are in pairs x --- y => i=i+2
-            glBegin(GL_TRIANGLES);
-            for (unsigned int n = 0; n < itMap.second.size(); n+=2) {
-                for (unsigned int i = itMap.second[n]; i <= itMap.second[n + 1]; i++) {
-                    for (int j = 0; j < 3; j++) {
-                        glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
-                        glTexCoord2f(m_pVertices[i * 3 + j].TexcoordS, m_pVertices[i * 3 + j].TexcoordT);
-                        glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
-                    }
-                }
-            }
-            glEnd();
-        }
-    }
- }
+	if (m_mtlMap.empty()) {
+		glBegin(GL_TRIANGLES);
+
+		for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
+				glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
+			}
+		}
+		glEnd();
+	}
+	else {
+		for (auto const &itMap : m_mtlMap) {
+
+			Material currentMaterial;
+			for (unsigned int k = 0; k < m_MaterialCount; k++) {
+				if (itMap.first.compare(m_pMaterials[k].getName()) == 0) {
+					currentMaterial = m_pMaterials[k];
+				}
+			}
+			setMaterial(currentMaterial);
+
+			//itMap.second is vector of face indices || indeces are in pairs x --- y => i=i+2
+			glBegin(GL_TRIANGLES);
+			for (unsigned int n = 0; n < itMap.second.size(); n += 2) {
+				for (unsigned int i = itMap.second[n]; i <= itMap.second[n + 1]; i++) {
+					for (int j = 0; j < 3; j++) {
+						glNormal3f(m_pVertices[i * 3 + j].Normal.X, m_pVertices[i * 3 + j].Normal.Y, m_pVertices[i * 3 + j].Normal.Z);
+						glTexCoord2f(m_pVertices[i * 3 + j].TexcoordS, m_pVertices[i * 3 + j].TexcoordT);
+						glVertex3f(m_pVertices[i * 3 + j].Position.X, m_pVertices[i * 3 + j].Position.Y, m_pVertices[i * 3 + j].Position.Z);
+					}
+				}
+			}
+			glEnd();
+		}
+	}
+}
 
 void Model::replaceFilename(const char* Filename,const char* replacer,char* destination) {
 	char charPointer;

@@ -1,13 +1,13 @@
 //
-//  vector.hpp
+//  vector.h
 //  CG_P1
 //
 //  Created by  on 17.03.16.
 //  Copyright © 2016 hsos. All rights reserved.
 //
 
-#ifndef vector_hpp
-#define vector_hpp
+#ifndef vector_h
+#define vector_h
 
 #include <stdio.h>
 #include <cmath> 
@@ -35,4 +35,4 @@ public:
     bool triangleIntersection(const Vector& d, const Vector& a, const Vector& b, const Vector& c, float& s) const;
 };
 
-#endif /* vector_hpp */
+#endif /* vector_h */

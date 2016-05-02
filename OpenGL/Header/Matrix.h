@@ -10,13 +10,11 @@
 #define __RealtimeRending__Matrix__
 
 #include <iostream>
-#include "vector.hpp"
+#include "../Header/vector.h"
 
-class Matrix
-{
+class Matrix {
 public:
-    union
-    {
+    union {
         struct {
             float m00, m10,m20,m30; // column major storage.
             float m01, m11,m21,m31; // caution: rows and columns are stored swizzeled
@@ -82,6 +80,5 @@ public:
     Matrix& perspective(float Fovy, float AspectRatio, float NearPlane, float FarPlane ); //Fovy=Field of View Y, AspectRatio=WindowWidth/WindowHeight
     Matrix& orthographic(float Width, float Height, float Near, float Far );
 };
-
 
 #endif /* defined(__RealtimeRending__Matrix__) */

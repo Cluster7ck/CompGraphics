@@ -1,13 +1,13 @@
 //
-//  color.hpp
+//  color.h
 //  CG_P1
 //
 //  Created by  on 17.03.16.
 //  Copyright © 2016 hsos. All rights reserved.
 //
 
-#ifndef color_hpp
-#define color_hpp
+#ifndef color_h
+#define color_h
 
 #include <stdio.h>
 
@@ -24,7 +24,6 @@ public:
     Color operator+(const Color& c) const;
     Color& operator+=(const Color& c);
 	void convert(float* arr) const;
-
 };
 
-#endif /* color_hpp */
+#endif /* color_h */

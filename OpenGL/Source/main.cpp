@@ -5,11 +5,11 @@
 //  Created by Philipp Lensing on 22.10.14.
 //  Copyright (c) 2014 Philipp Lensing. All rights reserved.
 //
-#include <iostream>
 
 #define _USE_MATH_DEFINES
-#include <cmath>
 
+#include <iostream>
+#include <math.h>
 #ifdef WIN32
 	#include <GL/glew.h>
 	#include <GL/GLUT.h>
@@ -21,6 +21,8 @@
 #include "../Header/Camera.h"
 #include "../Header/model.h"
 #include "../Header/matrix.h"
+#include "../Header/tank.h"
+#include "../Header/scene.h"
 
 const unsigned int g_WindowWidth=1024;
 const unsigned int g_WindowHeight=768;
@@ -30,8 +32,15 @@ Camera g_Camera;
 
 Model g_Model;
 
+/* Aufgabe 1 */
 float deltaTime = 0;
 int elapsedTimeLastFrame = 0;
+
+/* Aufgabe 2 */
+Tank* g_Model_2 = new Tank();
+
+/* Aufgabe 3 */
+//Scene* g_Scene = new Scene();
 
 int g_MouseButton = 0;
 int g_MouseState = 0;
@@ -43,7 +52,8 @@ void MouseMoveCallback(int x, int y);
 void KeyboardCallback( unsigned char key, int x, int y);
 void MousePassiveMoveCallback( int x, int y);
 void SpecialKeyboardCallback( int key, int x, int y);
-void SpecialKeyboardUpCallback( int key, int x, int y);
+void SpecialKeyboardUpCallback( int key, int x, int y); 
+void TransformAndDrawTank(float dtime);
 
 int main(int argc, char * argv[]) {
     // initialize the glut system and create a window
@@ -62,7 +72,15 @@ int main(int argc, char * argv[]) {
     glutSpecialFunc(SpecialKeyboardCallback);
     glutSpecialUpFunc(SpecialKeyboardUpCallback);
 
-    g_Model.load("OBJmodels/p4_modelle/tank.obj", true);
+	/* Aufgabe 1 */
+	//g_Model.load("OBJmodels/modelle/tank.obj", false);
+
+	/* Aufgabe 2 */
+	Vector* position = new Vector(0, 0, 0);
+	g_Model_2->load("OBJmodels/modelle/tank_top.obj", "OBJmodels/modelle/tank_bottom.obj", *position);
+
+	/* Aufgabe 3 */
+	//g_Scene->addSceneFile("scene.osh");
     
     glutMainLoop();
 }
@@ -127,6 +145,7 @@ void MouseCallback(int Button, int State, int x, int y) {
     g_MouseButton = Button;
     g_MouseState = State;
     g_Camera.mouseInput(x,y,Button,State);
+
 }
 
 void MouseMoveCallback( int x, int y) {
@@ -135,6 +154,7 @@ void MouseMoveCallback( int x, int y) {
 
 void MousePassiveMoveCallback( int x, int y) {
     // function is called if the mouse moves without pressing any button.
+	g_Model_2->aim(x, y);
 }
 
 void KeyboardCallback( unsigned char key, int x, int y) {
@@ -143,45 +163,53 @@ void KeyboardCallback( unsigned char key, int x, int y) {
 
 void SpecialKeyboardCallback( int key, int x, int y) {
     // function is called if a special keyboard button is pressed (e. g. Up-arrow-Key)
+	g_Model_2->steer(x, y);
 }
 
 void SpecialKeyboardUpCallback( int key, int x, int y) {
     // function is called if a special keyboard button is released
+	g_Model_2->steer(0, 0);
 }
 
-void TransformAndDrawTank() {
-    static float Angle=0;
+/* Aufgabe 1 */
+void TransformAndDrawTank(float dtime) {
+	static float Angle = 0;
 	// M_PI/180 = degree to rad factor
-    Angle += 90*deltaTime * M_PI/180;
+	Angle += 1 * dtime;
 
-	Matrix mt, mr1, mr2;
-	mt.translation(3,0,0);
+	Matrix mr1, mt, mr2;
 	mr1.rotationY(Angle);
-	mr2.rotationY(90 * M_PI / 180);
+	mt.translation(3, 0, 0);
+	mr2.rotationY(M_PI_2);
 
 	Matrix g = mr1 * mt * mr2;
-    glPushMatrix();
+	glPushMatrix();
 	glMultMatrixf(g);
-    g_Model.drawTriangles();
-    glPopMatrix();
+	g_Model.drawTriangles();
+	glPopMatrix();
 }
 
 void DrawScene() {
-    deltaTime = (glutGet(GLUT_ELAPSED_TIME) - elapsedTimeLastFrame)/1000.0;
-    elapsedTimeLastFrame = glutGet(GLUT_ELAPSED_TIME);
-    
-    std::cout << "deltaTime: " << deltaTime << " elapsedTimeLastFrame: " << elapsedTimeLastFrame << std::endl;
-    
+	/* Aufgabe 1 */
+	//deltaTime = (glutGet(GLUT_ELAPSED_TIME) - elapsedTimeLastFrame) / 1000.0;
+	//elapsedTimeLastFrame = glutGet(GLUT_ELAPSED_TIME);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     GLfloat lpos[4];
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
     
     g_Camera.apply();
-    TransformAndDrawTank();
-    DrawGroundGrid();
+
+	/* Aufgabe 1 */
+    //TransformAndDrawTank(deltaTime);
+    //DrawGroundGrid();
     
-    // call your tank & Scene class-members here
+	/* Aufgabe 2 */
+	g_Model_2->draw();
+
+	/* Aufgabe 3 */
+	//g_Scene->draw();
 
     glutSwapBuffers();
     glutPostRedisplay();
