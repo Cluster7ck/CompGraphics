@@ -25,6 +25,8 @@ public:
 	Vector position;
 	float route = 0.0;
 	float angle = 0.0;
+	Matrix m_Chassis;
+	Matrix m_Canon;
 
 	Tank();
 	~Tank();

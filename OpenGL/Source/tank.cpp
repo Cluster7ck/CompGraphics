@@ -19,6 +19,9 @@ bool Tank::load(const char* ChassisModel, const char* CanonModel, const Vector& 
 	g_Model_bottom.load(CanonModel, false);
 	this->position = StartPos;
 
+	m_Chassis.translation(StartPos);
+	m_Canon.translation(StartPos);
+
 	return true;
 }
 
@@ -61,14 +64,23 @@ void Tank::aim(unsigned int MouseX, unsigned int MouseY) {
 }
 
 void Tank::update(float DeltaTime) {
-	// todo
+	if (angle != 0)
+		angle = angle*DeltaTime*50;
+
+	Matrix mr1, mt;
+	mr1.rotationY(angle);
+
+	mt.translation(route*DeltaTime, 0, 0);
+
+	Matrix g = mr1 * mt;
+	m_Chassis = m_Chassis * g;
+	draw();
 }
 
 void Tank::draw() {
-	float deltaTime = 0;
-	int elapsedTimeLastFrame = 0;
-	deltaTime = (glutGet(GLUT_ELAPSED_TIME) - elapsedTimeLastFrame) / 1000.0;
-	elapsedTimeLastFrame = glutGet(GLUT_ELAPSED_TIME);
-
-	this->update(deltaTime);
+	glPushMatrix();
+	glMultMatrixf(m_Chassis);
+	g_Model_top.drawTriangles();
+	g_Model_bottom.drawTriangles();
+	glPopMatrix();
 }

@@ -38,6 +38,7 @@ int elapsedTimeLastFrame = 0;
 
 /* Aufgabe 2 */
 Tank* g_Model_2 = new Tank();
+int keyStore[4];
 
 /* Aufgabe 3 */
 //Scene* g_Scene = new Scene();
@@ -77,7 +78,7 @@ int main(int argc, char * argv[]) {
 
 	/* Aufgabe 2 */
 	Vector* position = new Vector(0, 0, 0);
-	g_Model_2->load("OBJmodels/modelle/tank_top.obj", "OBJmodels/modelle/tank_bottom.obj", *position);
+	g_Model_2->load("OBJmodels/p4_modelle/tank_top.obj", "OBJmodels/p4_modelle/tank_bottom.obj", *position);
 
 	/* Aufgabe 3 */
 	//g_Scene->addSceneFile("scene.osh");
@@ -163,12 +164,46 @@ void KeyboardCallback( unsigned char key, int x, int y) {
 
 void SpecialKeyboardCallback( int key, int x, int y) {
     // function is called if a special keyboard button is pressed (e. g. Up-arrow-Key)
-	g_Model_2->steer(x, y);
+	switch (key) {
+	case 100:
+		keyStore[0] = -1;
+		break;
+	case 102:
+		keyStore[1] = 1;
+		break;
+	case 101:
+		keyStore[2] = 1;
+		break;
+	case 103:
+		keyStore[3] = -1;
+		break;
+	default:
+		x = y = 0;
+		break;
+	}
+	g_Model_2->steer(keyStore[2] + keyStore[3], keyStore[0] + keyStore[1]);
 }
 
 void SpecialKeyboardUpCallback( int key, int x, int y) {
-    // function is called if a special keyboard button is released
-	g_Model_2->steer(0, 0);
+	// function is called if a special keyboard button is pressed (e. g. Up-arrow-Key)
+	switch (key) {
+	case 100:
+		keyStore[0] = 0;
+		break;
+	case 102:
+		keyStore[1] = 0;
+		break;
+	case 101:
+		keyStore[2] = 0;
+		break;
+	case 103:
+		keyStore[3] = 0;
+		break;
+	default:
+		x = y = 0;
+		break;
+	}
+	g_Model_2->steer(keyStore[2] + keyStore[3], keyStore[0] + keyStore[1]);
 }
 
 /* Aufgabe 1 */
@@ -191,8 +226,8 @@ void TransformAndDrawTank(float dtime) {
 
 void DrawScene() {
 	/* Aufgabe 1 */
-	//deltaTime = (glutGet(GLUT_ELAPSED_TIME) - elapsedTimeLastFrame) / 1000.0;
-	//elapsedTimeLastFrame = glutGet(GLUT_ELAPSED_TIME);
+	deltaTime = (glutGet(GLUT_ELAPSED_TIME) - elapsedTimeLastFrame) / 1000.0;
+	elapsedTimeLastFrame = glutGet(GLUT_ELAPSED_TIME);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     GLfloat lpos[4];
@@ -206,7 +241,10 @@ void DrawScene() {
     //DrawGroundGrid();
     
 	/* Aufgabe 2 */
-	g_Model_2->draw();
+	int key = 0;
+	int x = 0;
+	int y = 0;
+	g_Model_2->update(deltaTime);
 
 	/* Aufgabe 3 */
 	//g_Scene->draw();
