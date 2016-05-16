@@ -35,6 +35,9 @@ public:
     void apply();
     const Matrix& getViewMatrix() const;
     const Matrix& getProjectionMatrix() const;
+	int getWindowWidth();
+	int getWindowHeight();
+
 protected:
     void pan( float dx, float dy);
     void zoom( float dz);

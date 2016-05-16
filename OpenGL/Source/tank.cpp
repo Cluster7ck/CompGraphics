@@ -35,22 +35,27 @@ void Tank::aim(unsigned int MouseX, unsigned int MouseY) {
     (x in[-­‐1,1] und y in[-­‐1,1]). Dies entspricht der inversen Viewport‐Matrix.*/
 		
 	// todo
-
-
+	float xView = 1.0f*MouseX / (float)g_Camera.getWindowWidth()*2.0f - 1.0f;
+	float yView = 1.0f*MouseY / (float)g_Camera.getWindowHeight()*2.0f - 1.0f;
+	float zView = 0;
+	Vector mouseCoord(xView, yView, zView);
+	mouseCoord = mouseCoord.normalize();
 	/* Normalisierte Bildkoordinaten nutzen, um einen Richtungsvektor im Kameraraum(View‐Coordinates) 
 	zu erzeugen, indem die Projektionsmatrix von g_Camera invers auf die neuen Mauszeigerkoordinaten 
 	anwenden. Die Z‐Koordinate ist 0.*/
-	
-	// todo
+	Matrix projM(g_Camera.getProjectionMatrix());
+	mouseCoord = projM.invert().transformVec4x4(mouseCoord);
 
 	/* Richtungsvektor in Kamera­‐Koordinaten in Weltkoordinaten umrechnen. Richtung des Vektors anpassen 
 	und nicht dessen Ursprung. Wenn die Richtung des Strahls in Weltkoordinaten überführt wurde, muss 
 	nur noch der Ursprung des Strahls bestimmt werden. Der Ursprung des Strahls ist die Kameraposition, 
 	diese ist in der Kameramatrix(g_Camera.getViewMatrix()) kodiert.*/
-	
-	// todo
-
-
+	Matrix viewM(g_Camera.getViewMatrix());
+	mouseCoord = viewM.invert().transformVec4x4(mouseCoord);
+	Vector pointA(0, 0, 0);
+	Vector pointB(0, 0, 0);
+	Vector pointC(0, 0, 0);
+	g_Camera.getPosition().triangleIntersection(mouseCoord)
 	/* Schnittpunkt mit der Ebene Y=0 berechnen. Die Berechnung des Schnittpunkts wie beim Raytracing-­Verfahren:
 	Wähle 3 beliebige Punkte welche auf der y-Ebene liegen --> Algorithmus aus triangleIntersection */
 

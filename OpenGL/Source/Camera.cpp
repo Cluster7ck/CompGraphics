@@ -56,6 +56,14 @@ void Camera::setUp( const Vector& Up) {
     m_Up = Up;
 }
 
+int Camera::getWindowWidth(){
+	return g_WindowWidth;
+}
+
+int Camera::getWindowHeight(){
+	return g_WindowHeight;
+}
+
 void Camera::mouseInput( int x, int y, int Button, int State) {
     if(State == GLUT_DOWN) {
         if(m_LastMouseX==-1) m_LastMouseX = x;
