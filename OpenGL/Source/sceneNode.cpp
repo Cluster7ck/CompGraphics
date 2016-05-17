@@ -30,8 +30,13 @@ const Matrix& SceneNode::getLocalTransform() const {
 }
 
 Matrix SceneNode::getGlobalTransform() const {
-	// todo
-	return this->m_LocalTransform;
+	Matrix m;
+	m = m.identity();
+	if (this->getParent() == NULL) {
+		return m;
+	}
+
+	return m.scale(m_Scaling) * m_LocalTransform * this->getParent()->getGlobalTransform();
 }
 
 const Vector& SceneNode::getScaling() const {
@@ -61,7 +66,10 @@ void SceneNode::setModel(Model* pModel) {
 }
 
 void SceneNode::setLocalTransform(const Vector& Translation, const Vector& RotationAxis, const float RotationAngle) {
-	// todo
+	Matrix mt, mr;
+	mt.translation(Translation);
+	mr.rotationAxis(RotationAxis, RotationAngle);
+	this->m_LocalTransform = mt * mr;
 }
 
 void SceneNode::setLocalTransform(const Matrix& LocalTransform) {
