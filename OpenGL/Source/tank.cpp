@@ -33,13 +33,10 @@ void Tank::steer(float ForwardBackward, float LeftRight) {
 void Tank::aim(unsigned int MouseX, unsigned int MouseY) {
 	/* Berechnen der Pixelkoordinaten des Mauszeigers in normalisierte Bildkoordinaten um
     (x in[-­‐1,1] und y in[-­‐1,1]). Dies entspricht der inversen Viewport‐Matrix.*/
-		
-	// todo
 	float xView = 1.0f*MouseX / (float)g_Camera.getWindowWidth()*2.0f - 1.0f;
 	float yView = 1.0f*MouseY / (float)g_Camera.getWindowHeight()*2.0f - 1.0f;
 	float zView = 0;
 	Vector mouseCoord(xView, yView, zView);
-	mouseCoord = mouseCoord.normalize();
 	/* Normalisierte Bildkoordinaten nutzen, um einen Richtungsvektor im Kameraraum(View‐Coordinates) 
 	zu erzeugen, indem die Projektionsmatrix von g_Camera invers auf die neuen Mauszeigerkoordinaten 
 	anwenden. Die Z‐Koordinate ist 0.*/
@@ -51,7 +48,9 @@ void Tank::aim(unsigned int MouseX, unsigned int MouseY) {
 	nur noch der Ursprung des Strahls bestimmt werden. Der Ursprung des Strahls ist die Kameraposition, 
 	diese ist in der Kameramatrix(g_Camera.getViewMatrix()) kodiert.*/
 	Matrix viewM(g_Camera.getViewMatrix());
-	mouseCoord = viewM.invert().transformVec4x4(mouseCoord);
+	Matrix invViewM = viewM.invert();
+	//FALSCH
+	mouseCoord = invViewM.transformVec3x3(mouseCoord);
 	/* Schnittpunkt mit der Ebene Y=0 berechnen. Die Berechnung des Schnittpunkts wie beim Raytracing-­Verfahren:
 	Wähle 3 beliebige Punkte welche auf der y-Ebene liegen --> Algorithmus aus triangleIntersection */
 	//  y-plane
@@ -61,31 +60,41 @@ void Tank::aim(unsigned int MouseX, unsigned int MouseY) {
 	//normal
 	Vector n(0, 1, 0);
 	//Plane intersection
-	float s = (a.dot(n) - (g_Camera.getPosition()).dot(n)) / mouseCoord.dot(n);
-	Vector p = g_Camera.getPosition() + mouseCoord * s;
-	aimTarget.X = p.X;
-	aimTarget.Z = p.Z;
+	float s = (a.dot(n) - (invViewM.translation()).dot(n)) / mouseCoord.dot(n);
+	aimTarget = invViewM.translation() + mouseCoord * s;
+	aimTarget.X = aimTarget.X * -1.0f;
 	/* Um die Haubitze des Panzers mit homogenen Matrix­‐Transformationen auszurichten, wird die Position des
 	Schnittpunkts benutzt.
 	Info: Eine affine Matrix kann auch als Koordinatensystem verstanden werden.*/
-	
-	// todo
 }
 
 void Tank::update(float DeltaTime) {
 	if (angle != 0)
 		angle = angle*DeltaTime*50;
 
-	Matrix mr1, mt;
+	Matrix mr1, mt,mt2,mAim,mr2;
 	mr1.rotationY(angle);
 
 	mt.translation(route*DeltaTime, 0, 0);
-
 	Matrix g =  mt * mr1;
 	m_Chassis = m_Chassis * g;
+
+	Vector up(0, 1, 0);
+	Vector forward = aimTarget - m_Canon.translation();
+	forward.normalize();
+	//da rechtshaendig 
+	Vector right = up.cross(forward);
+
+	mAim.identity();
+	mAim.right(right);
+	mAim.up(up);
+	mAim.forward(forward);
+
+	mt2.translation(m_Chassis.translation());
+	m_Canon = mt2 * mr2 * mAim;
+
 	//m_Canon.translation(m_Chassis.translation());
-	m_Canon.lookAt(aimTarget, Vector(0, 1, 0), m_Canon.translation());
-	m_Canon.translation(m_Chassis.translation());
+
 	draw();
 }
 
