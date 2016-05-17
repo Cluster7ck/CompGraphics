@@ -87,7 +87,7 @@ int main(int argc, char * argv[]) {
 }
 
 void SetupDefaultGLSettings() {
-    glClearColor(0, 0, 0, 255);
+    glClearColor(0.5f, 0.5f, 0.5f, 255);
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -245,7 +245,6 @@ void DrawScene() {
 	int x = 0;
 	int y = 0;
 	g_Model_2->update(deltaTime);
-
 	/* Aufgabe 3 */
 	//g_Scene->draw();
 

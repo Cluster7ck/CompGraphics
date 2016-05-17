@@ -7,7 +7,7 @@
 //
 
 #include "../Header/vector.hpp"
-float triangleArea(Vector a, Vector b, Vector c);
+//float triangleArea(Vector a, Vector b, Vector c);
 
 
 Vector::Vector(float x, float y, float z){
