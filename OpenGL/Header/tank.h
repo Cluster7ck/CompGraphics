@@ -22,7 +22,6 @@ class Tank {
 public:
 	Model g_Model_top;
 	Model g_Model_bottom;
-	Vector position;
 	Vector aimTarget;
 	float route = 0.0;
 	float angle = 0.0;

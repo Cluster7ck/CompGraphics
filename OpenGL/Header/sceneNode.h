@@ -24,6 +24,7 @@ public:
 	const std::string& getName() const;
 	const Matrix& getLocalTransform() const;
 	Matrix getGlobalTransform() const;
+	Matrix getGlobalTransformWithoutScaling() const;
 	const Vector& getScaling() const;
 	const SceneNode* getParent() const;
 	const std::set<SceneNode*>& getChildren() const;

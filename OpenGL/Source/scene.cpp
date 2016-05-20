@@ -28,7 +28,7 @@ bool Scene::addSceneFile(const char* scenefile) {
 
 	std::map<std::string, Model*>::iterator map_iter;
 	std::string lastNodeID("");
-	SceneNode* lastSceneNode;
+	SceneNode* lastSceneNode = NULL;
 
 	std::string line = "";
 	while (std::getline(fileStream, line)) {
@@ -63,7 +63,6 @@ bool Scene::addSceneFile(const char* scenefile) {
 				&Angle,
 				&Scale.X, &Scale.Y, &Scale.Z);
 
-			SceneNode* parent = NULL;
 			map_iter = m_Models.find(std::string(ModelID));
 			if (map_iter != m_Models.end()) {
 				if (strncmp(ParentID, "NULL", 4) == 0) {
@@ -78,8 +77,8 @@ bool Scene::addSceneFile(const char* scenefile) {
 						lastSceneNode = n_SceneNode;
 					}
 					else{
-						bool weFuckedUp = true;
 						exit(1);
+						//TODO Traverse and search
 					}
 				}
 			}

@@ -78,7 +78,7 @@ int main(int argc, char * argv[]) {
 
 	/* Aufgabe 2 */
 	Vector* position = new Vector(0, 0, 0);
-	//g_Model_2->load("OBJmodels/p4_modelle/tank_top.obj", "OBJmodels/p4_modelle/tank_bottom.obj", *position);
+	g_Model_2->load("OBJmodels/p4_modelle/tank_top.obj", "OBJmodels/p4_modelle/tank_bottom.obj", *position);
 
 	/* Aufgabe 3 */
 	g_Scene->addSceneFile("OBJmodels/p4_modelle/scene.osh");
@@ -244,7 +244,7 @@ void DrawScene() {
 	int key = 0;
 	int x = 0;
 	int y = 0;
-	//g_Model_2->update(deltaTime);
+	g_Model_2->update(deltaTime);
 	/* Aufgabe 3 */
 	g_Scene->draw();
 
