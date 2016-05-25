@@ -21,7 +21,7 @@
 #include "../Header/Camera.h"
 #include "../Header/texture.h"
 #include "../Header/PlaneModel.h"
-
+#include "../Header/Terrain.h"
 
 // window x and y size
 const unsigned int g_WindowWidth=1024;
@@ -32,6 +32,10 @@ const Vector g_LightPos = Vector( 0,4,0);
 PlaneModel g_PlaneModel;
 
 Camera g_Camera;
+
+// Neu
+Terrain g_Terrain;
+
 int g_MouseButton = 0;
 int g_MouseState = 0;
 
@@ -42,16 +46,15 @@ void MouseMoveCallback(int x, int y);
 void KeyboardCallback( unsigned char key, int x, int y);
 
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char * argv[]) {
     // initialize the glut system and create a window
     glutInitWindowSize(g_WindowWidth, g_WindowHeight);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutCreateWindow("CG Praktikum");
-#ifdef WIN32
-	glewInit();
-#endif
+	#ifdef WIN32
+		glewInit();
+	#endif
     
     SetupDefaultGLSettings();
     
@@ -60,15 +63,14 @@ int main(int argc, char * argv[])
     glutKeyboardFunc(KeyboardCallback);
     glutMotionFunc(MouseMoveCallback);
     
-	g_PlaneModel.load("Ressources/grass.bmp", "Ressources/sand.bmp");
+	//g_PlaneModel.load("Ressources/grass.bmp", "Ressources/sand.bmp");
+	//Neu
+	g_Terrain.load("Ressources/heightmap.bmp", "Ressources/grass.bmp", "Ressources/sand.bmp", "Ressources/mixmap.bmp", 60, 60, 7);
 
     glutMainLoop();
-    
 }
 
-
-void SetupDefaultGLSettings()
-{
+void SetupDefaultGLSettings() {
     glClearColor(0, 0, 0, 255);
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -101,11 +103,9 @@ void SetupDefaultGLSettings()
     glShadeModel(GL_SMOOTH);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-
 }
 
-void DrawGroundGrid()
-{
+void DrawGroundGrid() {
     const float GridSize=10.0f;
     const unsigned int GridSegments=20;
     const float GridStep=GridSize/(float)GridSegments;
@@ -114,8 +114,7 @@ void DrawGroundGrid()
     glDisable( GL_LIGHTING);
     glBegin(GL_LINES);
         glColor3f(1.0f, 1.0f, 1.0f);
-        for( unsigned int i=0; i<GridSegments+1; i++)
-        {
+        for( unsigned int i=0; i<GridSegments+1; i++) {
             float itpos=GridOrigin + GridStep*(float)i;
             glVertex3f(itpos, 0, GridOrigin);
             glVertex3f(itpos, 0, GridOrigin+GridSize);
@@ -126,28 +125,22 @@ void DrawGroundGrid()
         }
     glEnd();
     glEnable( GL_LIGHTING);
-
 }
 
-void MouseCallback(int Button, int State, int x, int y)
-{
+void MouseCallback(int Button, int State, int x, int y) {
     g_MouseButton = Button;
     g_MouseState = State;
     g_Camera.mouseInput(x,y,Button,State);
 }
 
-void MouseMoveCallback( int x, int y)
-{
+void MouseMoveCallback( int x, int y) {
     g_Camera.mouseInput(x,y,g_MouseButton,g_MouseState);
 }
-
-void KeyboardCallback( unsigned char key, int x, int y)
-{    
+ 
+void KeyboardCallback( unsigned char key, int x, int y) {    
 }
 
-
-void DrawScene()
-{
+void DrawScene() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
@@ -159,9 +152,10 @@ void DrawScene()
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 
-	g_PlaneModel.draw();
-    
+	//g_PlaneModel.draw();
+	// Neu
+	g_Terrain.draw();
+
     glutSwapBuffers();
     glutPostRedisplay();
-    
 }

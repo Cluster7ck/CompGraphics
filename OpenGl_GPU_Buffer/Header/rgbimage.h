@@ -15,7 +15,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "../Header/color.h"
+#include "color.h"
 
 class RGBImage{
 public:

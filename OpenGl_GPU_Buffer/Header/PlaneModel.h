@@ -21,7 +21,7 @@
 #endif
 
 #include "texture.h"
-#include "Vector.h"
+#include "vector.h"
 
 struct PlaneVertex
 {
