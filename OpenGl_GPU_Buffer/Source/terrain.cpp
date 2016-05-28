@@ -68,6 +68,19 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 	indicesCount = (imgWidth * imgHeight) * 6;
 	unsigned int *Indices = new unsigned int[indicesCount];
 
+	for (int x = 0; x < imgWidth; x++) {
+		for (int y = 0; y < imgHeight; y++) {
+
+			Indices[x * imgWidth + y] = x * imgWidth + y;
+			Indices[(x * imgWidth + y) + 1] = (x + 1)* imgWidth + y;
+			Indices[(x * imgWidth + y) + 2] = (x + 1)* imgWidth + (y + 1);
+
+			Indices[(x * imgWidth + y) + 3] = (x)* imgWidth + y;
+			Indices[(x * imgWidth + y) + 4] = (x + 1)* imgWidth + (y + 1);
+			Indices[(x * imgWidth + y) + 5] = (x)* imgWidth + (y + 1);
+		}
+	}
+
 	// create gpu buffer for vertices
 	glGenBuffers(1, &m_VertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
