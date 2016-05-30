@@ -52,8 +52,8 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
 			Color currentColor = img.getPixelColor(x, y);
-			Vertices[x * imgWidth + y].Pos.X = (x * Width) - (Width / 2);
-			Vertices[x * imgWidth + y].Pos.Z = (y * Depth) - (Depth / 2);
+			Vertices[x * imgWidth + y].Pos.X = x/(imgWidth*1.0f)*Width - (Width / 2);
+			Vertices[x * imgWidth + y].Pos.Z = y/(imgHeight*1.0f)*Depth - (Depth / 2);
 			Vertices[x * imgHeight + y].Pos.Y = ((currentColor.R + currentColor.G + currentColor.B) / 3) * HeightMultiplier;
 			Vertices[x * imgHeight + y].Normal = Vector();
 			//Für Mixmap
@@ -68,7 +68,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 	// Indizes
 	indicesCount = (imgWidth * imgHeight) * 6;
 	unsigned int *Indices = new unsigned int[indicesCount];
-
+	
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
 			if (x < imgWidth - 1 && y < imgHeight - 1) {

@@ -146,7 +146,7 @@ void DrawScene() {
     glLoadIdentity();
     g_Camera.apply();
     
-    DrawGroundGrid();
+   //DrawGroundGrid();
     
     GLfloat lpos[4];
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
