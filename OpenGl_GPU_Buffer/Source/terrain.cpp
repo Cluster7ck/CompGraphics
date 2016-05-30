@@ -9,6 +9,7 @@
 #include "../Header/terrain.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
+Vector triangleNormal(Vector a, Vector b, Vector c);
 
 Terrain::Terrain() {
 
@@ -51,8 +52,8 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
 			Color currentColor = img.getPixelColor(x, y);
-			Vertices[x * imgWidth + y].Pos.X = ((float)x * Width) - (Width / 2);
-			Vertices[x * imgWidth + y].Pos.Z = ((float)y * Depth) - (Depth / 2);
+			Vertices[x * imgWidth + y].Pos.X = (x * Width) - (Width / 2);
+			Vertices[x * imgWidth + y].Pos.Z = (y * Depth) - (Depth / 2);
 			Vertices[x * imgHeight + y].Pos.Y = ((currentColor.R + currentColor.G + currentColor.B) / 3) * HeightMultiplier;
 			Vertices[x * imgHeight + y].Normal = Vector();
 			//Für Mixmap
@@ -70,14 +71,157 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
+			if (x < imgWidth - 1 && y < imgHeight - 1) {
+				Indices[x * imgWidth + y] = x * imgWidth + y;
+				Indices[(x * imgWidth + y) + 1] = (x + 1)* imgWidth + y;
+				Indices[(x * imgWidth + y) + 2] = (x + 1)* imgWidth + (y + 1);
+				
+				Indices[(x * imgWidth + y) + 3] = (x)* imgWidth + y;
+				Indices[(x * imgWidth + y) + 4] = (x + 1)* imgWidth + (y + 1);
+				Indices[(x * imgWidth + y) + 5] = (x)* imgWidth + (y + 1);
+			}
+		}
+	}
 
-			Indices[x * imgWidth + y] = x * imgWidth + y;
-			Indices[(x * imgWidth + y) + 1] = (x + 1)* imgWidth + y;
-			Indices[(x * imgWidth + y) + 2] = (x + 1)* imgWidth + (y + 1);
+	//Calc normals
+	for (int x = 0; x < imgWidth; x++) {
+		for (int y = 0; y < imgHeight; y++) {
+			Vector a, b, c;
+			Vector vertexNormal, normalTri1, normalTri2, normalTri3, normalTri4, normalTri5, normalTri6;
+			
+			if(x == 0 && y == 0){
+				a = Vertices[x * imgWidth + y].Pos;
+				b = Vertices[(x + 1)* imgWidth + y].Pos;
+				c = Vertices[(x + 1)* imgWidth + (y + 1)].Pos;
+				normalTri1 = triangleNormal(a,b,c);
 
-			Indices[(x * imgWidth + y) + 3] = (x)* imgWidth + y;
-			Indices[(x * imgWidth + y) + 4] = (x + 1)* imgWidth + (y + 1);
-			Indices[(x * imgWidth + y) + 5] = (x)* imgWidth + (y + 1);
+				a = Vertices[x * imgWidth + y].Pos;
+				b = Vertices[(x + 1)* imgWidth + (y + 1)].Pos;
+				c = Vertices[x * imgWidth + (y + 1)].Pos;
+				normalTri2 = triangleNormal(a, b, c);
+				
+				vertexNormal = ((normalTri1 + normalTri2) * .5f).normalize();
+			}
+			else if (y == 0) {
+				if (x == imgWidth - 1) {
+					a = Vertices[x * imgWidth + y].Pos;
+					b = Vertices[x * imgWidth + (y + 1)].Pos;
+					c = Vertices[(x - 1)* imgWidth + y].Pos;
+					vertexNormal = triangleNormal(a, b, c);
+				}
+				else {
+					a = Vertices[x * imgWidth + y].Pos;
+					b = Vertices[(x + 1)* imgWidth + (y + 1)].Pos;
+					c = Vertices[x * imgWidth + (y + 1)].Pos;
+					normalTri1 = triangleNormal(a, b, c);
+
+					a = Vertices[x * imgWidth + y].Pos;
+					b = Vertices[(x + 1)* imgWidth + y].Pos;
+					c = Vertices[(x + 1)* imgWidth + (y + 1)].Pos;
+					normalTri2 = triangleNormal(a, b, c);
+
+					a = Vertices[x * imgWidth + y].Pos;
+					b = Vertices[x * imgWidth + (y + 1)].Pos;
+					c = Vertices[(x-1) * imgWidth + y].Pos;
+					normalTri3 = triangleNormal(a, b, c);
+
+					vertexNormal = ((normalTri1 + normalTri2 + normalTri3) * (1/3.0f)).normalize();
+				}
+			}
+			else if (x == 0) {
+				if (y == imgHeight - 1) {
+					a = Vertices[x * imgWidth + (y)].Pos;
+					b = Vertices[x * imgWidth + (y-1)].Pos;
+					c = Vertices[(x + 1)* imgWidth + y].Pos;
+					vertexNormal = triangleNormal(a, b, c);
+				}
+				else{
+					a = Vertices[x * imgWidth + y].Pos;
+					b = Vertices[x * imgWidth + (y-1)].Pos;
+					c = Vertices[(x + 1)* imgWidth + y].Pos;
+					normalTri1 = triangleNormal(a, b, c);
+
+					a = Vertices[x * imgWidth + y].Pos;
+					b = Vertices[(x + 1)* imgWidth + y].Pos;
+					c = Vertices[(x + 1)* imgWidth + (y + 1)].Pos;
+					normalTri2 = triangleNormal(a, b, c);
+
+					a = Vertices[x * imgWidth + y].Pos;
+					b = Vertices[(x + 1)* imgWidth + (y + 1)].Pos;
+					c = Vertices[x * imgWidth + (y + 1)].Pos;
+					normalTri3 = triangleNormal(a, b, c);
+
+					vertexNormal = ((normalTri1 + normalTri2 + normalTri3) * (1 / 3.0f)).normalize();
+				}
+			}
+			else if (x == imgWidth - 1) {
+				if (y == imgHeight - 1) {
+					a = Vertices[x* imgWidth + y].Pos;
+					b = Vertices[(x-1) * imgWidth + y].Pos;
+					c = Vertices[(x - 1)* imgWidth + (y-1)].Pos;
+					normalTri1 = triangleNormal(a, b, c);
+
+					a = Vertices[x* imgWidth + y].Pos;
+					b = Vertices[(x-1) * imgWidth + (y - 1)].Pos;
+					c = Vertices[x * imgWidth + (y-1)].Pos;
+					normalTri2 = triangleNormal(a, b, c);
+
+					vertexNormal = ((normalTri1 + normalTri2) * .5f).normalize();
+				}
+				else {
+					a = Vertices[x* imgWidth + y].Pos;
+					b = Vertices[(x - 1) * imgWidth + y].Pos;
+					c = Vertices[(x - 1)* imgWidth + (y - 1)].Pos;
+					normalTri1 = triangleNormal(a, b, c);
+
+					a = Vertices[x* imgWidth + y].Pos;
+					b = Vertices[(x - 1) * imgWidth + (y - 1)].Pos;
+					c = Vertices[x * imgWidth + (y - 1)].Pos;
+					normalTri2 = triangleNormal(a, b, c);
+
+					a = Vertices[x* imgWidth + y].Pos;
+					b = Vertices[x * imgWidth + (y+1)].Pos;
+					c = Vertices[(x-1) * imgWidth + y].Pos;
+					normalTri3 = triangleNormal(a, b, c);
+
+					vertexNormal = ((normalTri1 + normalTri2 + normalTri3) * (1 / 3.0f)).normalize();
+				}
+			}
+			else if(x < imgWidth - 1 && y < imgHeight - 1) {
+				a = Vertices[x* imgWidth + y].Pos;
+				b = Vertices[(x - 1) * imgWidth + y].Pos;
+				c = Vertices[(x - 1)* imgWidth + (y - 1)].Pos;
+				normalTri1 = triangleNormal(a, b, c);
+
+				a = Vertices[x* imgWidth + y].Pos;
+				b = Vertices[(x - 1) * imgWidth + (y - 1)].Pos;
+				c = Vertices[x * imgWidth + (y - 1)].Pos;
+				normalTri2 = triangleNormal(a, b, c);
+
+				a = Vertices[x* imgWidth + y].Pos;
+				b = Vertices[x * imgWidth + (y + 1)].Pos;
+				c = Vertices[(x - 1) * imgWidth + y].Pos;
+				normalTri3 = triangleNormal(a, b, c);
+				
+				a = Vertices[x * imgWidth + y].Pos;
+				b = Vertices[x * imgWidth + (y - 1)].Pos;
+				c = Vertices[(x + 1)* imgWidth + y].Pos;
+				normalTri4 = triangleNormal(a, b, c);
+
+				a = Vertices[x * imgWidth + y].Pos;
+				b = Vertices[(x + 1)* imgWidth + y].Pos;
+				c = Vertices[(x + 1)* imgWidth + (y + 1)].Pos;
+				normalTri5 = triangleNormal(a, b, c);
+
+				a = Vertices[x * imgWidth + y].Pos;
+				b = Vertices[(x + 1)* imgWidth + (y + 1)].Pos;
+				c = Vertices[x * imgWidth + (y + 1)].Pos;
+				normalTri6 = triangleNormal(a, b, c);
+
+				vertexNormal = ((normalTri1 + normalTri2 + normalTri3 + normalTri4 + normalTri5 + normalTri6) * (1 / 6.0f)).normalize();
+			}
+
+			Vertices[x * imgWidth + y].Normal = vertexNormal;
 		}
 	}
 
@@ -155,4 +299,8 @@ void Terrain::draw() {
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); // set modulate as default behaviour for unit 0
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+Vector triangleNormal(Vector a, Vector b, Vector c) {
+	return (b - a).cross(c - a);
 }
