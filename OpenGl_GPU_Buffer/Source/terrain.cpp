@@ -54,7 +54,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 			Color currentColor = img.getPixelColor(x, y);
 			Vertices[x * imgWidth + y].Pos.X = x/(imgWidth*1.0f)*Width - (Width / 2);
 			Vertices[x * imgWidth + y].Pos.Z = y/(imgHeight*1.0f)*Depth - (Depth / 2);
-			Vertices[x * imgHeight + y].Pos.Y = ((currentColor.R + currentColor.G + currentColor.B) / 3) * HeightMultiplier;
+			Vertices[x * imgHeight + y].Pos.Y = currentColor.R * HeightMultiplier;
 			Vertices[x * imgHeight + y].Normal = Vector();
 			//Für Mixmap
 			Vertices[x * imgHeight + y].u0 = 0;
@@ -68,17 +68,18 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 	// Indizes
 	indicesCount = (imgWidth * imgHeight) * 6;
 	unsigned int *Indices = new unsigned int[indicesCount];
-	
+	unsigned int vertexIndex = 0;
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
 			if (x < imgWidth - 1 && y < imgHeight - 1) {
-				Indices[x * imgWidth + y] = x * imgWidth + y;
-				Indices[(x * imgWidth + y) + 1] = (x + 1)* imgWidth + y;
-				Indices[(x * imgWidth + y) + 2] = (x + 1)* imgWidth + (y + 1);
+				Indices[vertexIndex] = x * imgWidth + y;
+				Indices[vertexIndex + 1] = (x + 1)* imgWidth + y;
+				Indices[vertexIndex + 2] = (x + 1)* imgWidth + (y + 1);
 				
-				Indices[(x * imgWidth + y) + 3] = (x)* imgWidth + y;
-				Indices[(x * imgWidth + y) + 4] = (x + 1)* imgWidth + (y + 1);
-				Indices[(x * imgWidth + y) + 5] = (x)* imgWidth + (y + 1);
+				Indices[vertexIndex + 3] = (x)* imgWidth + y;
+				Indices[vertexIndex + 4] = (x + 1)* imgWidth + (y + 1);
+				Indices[vertexIndex + 5] = (x)* imgWidth + (y + 1);
+				vertexIndex += 6;
 			}
 		}
 	}
@@ -303,4 +304,6 @@ void Terrain::draw() {
 
 Vector triangleNormal(Vector a, Vector b, Vector c) {
 	return (b - a).cross(c - a);
+	//return (b - c).cross(a - c);
+	//return (c - a).cross(b - a);
 }
