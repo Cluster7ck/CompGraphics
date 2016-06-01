@@ -51,18 +51,18 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 	// Vertices
 	TerrainVertex* Vertices = new TerrainVertex[imgWidth*imgHeight];
 
-	unsigned int k = 20;
+	unsigned int k = 60;
 
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
 			Color currentColor = img.getPixelColor(x, y);
 			Vertices[x * imgWidth + y].Pos.X = x/(imgWidth*1.0f)*Width - (Width / 2);
 			Vertices[x * imgWidth + y].Pos.Z = y/(imgHeight*1.0f)*Depth - (Depth / 2);
-			Vertices[x * imgHeight + y].Pos.Y = currentColor.R/255 * HeightMultiplier;
+			Vertices[x * imgHeight + y].Pos.Y = currentColor.R * HeightMultiplier;
 			Vertices[x * imgHeight + y].Normal = Vector();
 			//Für Mixmap
-			Vertices[x * imgHeight + y].u0 = x / (imgWidth * 1.0f);//(mixMap.getPixelColor(x,y).R / 255);
-			Vertices[x * imgHeight + y].v0 = y / (imgHeight * 1.0f);//(mixMap.getPixelColor(x, y).R / 255);
+			Vertices[x * imgHeight + y].u0 = x / (imgWidth * 1.0f);
+			Vertices[x * imgHeight + y].v0 = y / (imgHeight * 1.0f);
 			//Für Detailsmap
 			Vertices[x * imgHeight + y].u1 = x / (imgWidth * 1.0f) * k;
 			Vertices[x * imgHeight + y].v1 = y / (imgHeight * 1.0f) * k;
@@ -91,6 +91,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 		}
 	}
 
+	Vector lightPos = Vector(0, 16, 0);
 	// Calc normals
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
@@ -196,6 +197,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 				}
 			}
 			else if(x < imgWidth - 1 && y < imgHeight - 1) {
+
 				a = Vertices[x* imgWidth + y].Pos;
 				b = Vertices[(x - 1) * imgWidth + y].Pos;
 				c = Vertices[(x - 1)* imgWidth + (y - 1)].Pos;
@@ -228,11 +230,17 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 
 				vertexNormal = ((normalTri1 + normalTri2 + normalTri3 + normalTri4 + normalTri5 + normalTri6)).normalize();
 			}
-
+			/*
 			Vertices[x * imgWidth + y].Normal = vertexNormal * -1;
+			Vector dirLight = lightPos - Vertices[x * imgWidth + y].Pos;
+			dirLight.normalize();
+			if ((vertexNormal * -1).dot(dirLight) > 0 ) {
+
+			}*/
 		}
 	}
 
+	
 	// create gpu buffer for vertices
 	glGenBuffers(1, &m_VertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
@@ -265,10 +273,11 @@ void Terrain::draw() {
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(24));
 	m_MixingRatio.apply();
-
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	// setup texture-environment-unit 0 => grass
 	glActiveTexture(GL_TEXTURE1);
 	glClientActiveTexture(GL_TEXTURE1);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(32)); // first uv-set
 	m_GrassTex.apply();
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -279,28 +288,29 @@ void Terrain::draw() {
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(40)); // second uv-set
 	m_SandTex.apply();
-	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-	/*
-	// setup texture-environment-unit 2 => grass*sand
-	glActiveTexture(GL_TEXTURE3);
-	glClientActiveTexture(GL_TEXTURE3);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(32)); // is obsolete, but we have to supply it
-	m_GrassTex.apply();*/
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE);   //Interpolate RGB with RGB
-
+	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE);
+	//Interpolate between grass and sand with factor from mixmap
 	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE1);
 	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE2);
 	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE2_RGB, GL_TEXTURE0);
 	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_ONE_MINUS_SRC_COLOR);
-	//GL_PRIMARY_COLOR
-	//glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-	//
+	//save current state in texture so we can multiply with the shadow
+	glActiveTexture(GL_TEXTURE3);
+	glClientActiveTexture(GL_TEXTURE3);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(40));
+	m_GrassTex.apply();
+	//multiply
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_PREVIOUS);
+	glTexEnvf(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_PRIMARY_COLOR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
 
 	// we draw our terrain
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
@@ -317,13 +327,11 @@ void Terrain::draw() {
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); // set modulate as default behaviour for unit 0
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 Vector triangleNormal(Vector a, Vector b, Vector c) {
 	return (b - a).cross(c - a);
-	//return (b - c).cross(a - c);
-	//return (c - a).cross(b - a);
 }
