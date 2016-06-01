@@ -47,6 +47,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 	int imgWidth = img.width();
 	int imgHeight = img.height();
 
+	// Vertices
 	TerrainVertex* Vertices = new TerrainVertex[imgWidth*imgHeight];
 
 	for (int x = 0; x < imgWidth; x++) {
@@ -54,7 +55,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 			Color currentColor = img.getPixelColor(x, y);
 			Vertices[x * imgWidth + y].Pos.X = x/(imgWidth*1.0f)*Width - (Width / 2);
 			Vertices[x * imgWidth + y].Pos.Z = y/(imgHeight*1.0f)*Depth - (Depth / 2);
-			Vertices[x * imgHeight + y].Pos.Y = currentColor.R * HeightMultiplier;
+			Vertices[x * imgHeight + y].Pos.Y = currentColor.R/255 * HeightMultiplier;
 			Vertices[x * imgHeight + y].Normal = Vector();
 			//Für Mixmap
 			Vertices[x * imgHeight + y].u0 = 0;
@@ -65,26 +66,27 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 		}
 	}
 
-	// Indizes
+	// Indices
 	indicesCount = (imgWidth * imgHeight) * 6;
 	unsigned int *Indices = new unsigned int[indicesCount];
 	unsigned int vertexIndex = 0;
+
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
 			if (x < imgWidth - 1 && y < imgHeight - 1) {
 				Indices[vertexIndex] = x * imgWidth + y;
-				Indices[vertexIndex + 1] = (x + 1)* imgWidth + y;
-				Indices[vertexIndex + 2] = (x + 1)* imgWidth + (y + 1);
+				Indices[vertexIndex + 1] = (x + 1)* imgWidth + (y + 1);
+				Indices[vertexIndex + 2] = (x + 1)* imgWidth + y;
 				
 				Indices[vertexIndex + 3] = (x)* imgWidth + y;
-				Indices[vertexIndex + 4] = (x + 1)* imgWidth + (y + 1);
-				Indices[vertexIndex + 5] = (x)* imgWidth + (y + 1);
+				Indices[vertexIndex + 4] = (x)* imgWidth + (y + 1);
+				Indices[vertexIndex + 5] = (x + 1)* imgWidth + (y + 1);
 				vertexIndex += 6;
 			}
 		}
 	}
 
-	//Calc normals
+	// Calc normals
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
 			Vector a, b, c;
@@ -222,7 +224,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 				vertexNormal = ((normalTri1 + normalTri2 + normalTri3 + normalTri4 + normalTri5 + normalTri6) * (1 / 6.0f)).normalize();
 			}
 
-			Vertices[x * imgWidth + y].Normal = vertexNormal;
+			Vertices[x * imgWidth + y].Normal = vertexNormal * -1;
 		}
 	}
 

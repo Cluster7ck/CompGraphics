@@ -65,7 +65,7 @@ int main(int argc, char * argv[]) {
     
 	//g_PlaneModel.load("Ressources/grass.bmp", "Ressources/sand.bmp");
 	//Neu
-	g_Terrain.load("Ressources/heightmap.bmp", "Ressources/grass.bmp", "Ressources/sand.bmp", "Ressources/mixmap.bmp", 60, 60, 7);
+	g_Terrain.load("Ressources/heightmap.bmp", "Ressources/grass.bmp", "Ressources/sand.bmp", "Ressources/mixmap.bmp", 20, 20, 500);
 
     glutMainLoop();
 }
