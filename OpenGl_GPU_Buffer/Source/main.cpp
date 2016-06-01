@@ -63,7 +63,7 @@ int main(int argc, char * argv[]) {
     glutKeyboardFunc(KeyboardCallback);
     glutMotionFunc(MouseMoveCallback);
     
-	//g_PlaneModel.load("Ressources/grass.bmp", "Ressources/sand.bmp");
+	g_PlaneModel.load("Ressources/grass.bmp", "Ressources/sand.bmp");
 	//Neu
 	g_Terrain.load("Ressources/heightmap.bmp", "Ressources/grass.bmp", "Ressources/sand.bmp", "Ressources/mixmap.bmp", 20, 20, 500);
 
@@ -152,9 +152,9 @@ void DrawScene() {
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 
-	//g_PlaneModel.draw();
+	g_PlaneModel.draw();
 	// Neu
-	g_Terrain.draw();
+	//g_Terrain.draw();
 
     glutSwapBuffers();
     glutPostRedisplay();

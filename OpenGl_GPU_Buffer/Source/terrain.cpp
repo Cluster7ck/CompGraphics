@@ -28,7 +28,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 	}
 
 	// Aufgabe 2
-	/*if (!m_GrassTex.LoadFromBMP(DetailMap1)) {
+	if (!m_GrassTex.LoadFromBMP(DetailMap1)) {
 		std::cout << "Fehler beim Lesen der DetailMap1-Datei." << std::endl;
 		return false;
 	}
@@ -41,14 +41,17 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 	if (!m_MixingRatio.LoadFromBMP(MixMap)) {
 		std::cout << "Fehler beim Lesen der MixMap-Datei." << std::endl;
 		return false;
-	}*/
+	}
 
 	RGBImage img = *imgTexture.getRGBImage();
+	RGBImage mixMap = *m_MixingRatio.getRGBImage();
 	int imgWidth = img.width();
 	int imgHeight = img.height();
 
 	// Vertices
 	TerrainVertex* Vertices = new TerrainVertex[imgWidth*imgHeight];
+
+	unsigned int k = 20;
 
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
@@ -58,11 +61,11 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 			Vertices[x * imgHeight + y].Pos.Y = currentColor.R/255 * HeightMultiplier;
 			Vertices[x * imgHeight + y].Normal = Vector();
 			//Für Mixmap
-			Vertices[x * imgHeight + y].u0 = 0;
-			Vertices[x * imgHeight + y].v0 = 0;
+			Vertices[x * imgHeight + y].u0 = (mixMap.getPixelColor(x,y).R / 255);
+			Vertices[x * imgHeight + y].v0 = (mixMap.getPixelColor(x, y).R / 255);
 			//Für Detailsmap
-			Vertices[x * imgHeight + y].u1 = 0;
-			Vertices[x * imgHeight + y].v1 = 0;
+			Vertices[x * imgHeight + y].u1 = x / (imgWidth * 1.0f) * k;
+			Vertices[x * imgHeight + y].v1 = y / (imgHeight * 1.0f) * k;
 		}
 	}
 
@@ -103,7 +106,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 				c = Vertices[x * imgWidth + (y + 1)].Pos;
 				normalTri2 = triangleNormal(a, b, c);
 				
-				vertexNormal = ((normalTri1 + normalTri2) * .5f).normalize();
+				vertexNormal = ((normalTri1 + normalTri2)).normalize();
 			}
 			else if (y == 0) {
 				if (x == imgWidth - 1) {
@@ -128,7 +131,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 					c = Vertices[(x-1) * imgWidth + y].Pos;
 					normalTri3 = triangleNormal(a, b, c);
 
-					vertexNormal = ((normalTri1 + normalTri2 + normalTri3) * (1/3.0f)).normalize();
+					vertexNormal = ((normalTri1 + normalTri2 + normalTri3)).normalize();
 				}
 			}
 			else if (x == 0) {
@@ -154,7 +157,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 					c = Vertices[x * imgWidth + (y + 1)].Pos;
 					normalTri3 = triangleNormal(a, b, c);
 
-					vertexNormal = ((normalTri1 + normalTri2 + normalTri3) * (1 / 3.0f)).normalize();
+					vertexNormal = ((normalTri1 + normalTri2 + normalTri3)).normalize();
 				}
 			}
 			else if (x == imgWidth - 1) {
@@ -169,7 +172,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 					c = Vertices[x * imgWidth + (y-1)].Pos;
 					normalTri2 = triangleNormal(a, b, c);
 
-					vertexNormal = ((normalTri1 + normalTri2) * .5f).normalize();
+					vertexNormal = ((normalTri1 + normalTri2)).normalize();
 				}
 				else {
 					a = Vertices[x* imgWidth + y].Pos;
@@ -187,7 +190,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 					c = Vertices[(x-1) * imgWidth + y].Pos;
 					normalTri3 = triangleNormal(a, b, c);
 
-					vertexNormal = ((normalTri1 + normalTri2 + normalTri3) * (1 / 3.0f)).normalize();
+					vertexNormal = ((normalTri1 + normalTri2 + normalTri3)).normalize();
 				}
 			}
 			else if(x < imgWidth - 1 && y < imgHeight - 1) {
@@ -221,7 +224,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 				c = Vertices[x * imgWidth + (y + 1)].Pos;
 				normalTri6 = triangleNormal(a, b, c);
 
-				vertexNormal = ((normalTri1 + normalTri2 + normalTri3 + normalTri4 + normalTri5 + normalTri6) * (1 / 6.0f)).normalize();
+				vertexNormal = ((normalTri1 + normalTri2 + normalTri3 + normalTri4 + normalTri5 + normalTri6)).normalize();
 			}
 
 			Vertices[x * imgWidth + y].Normal = vertexNormal * -1;
