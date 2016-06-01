@@ -61,11 +61,13 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 			Vertices[x * imgHeight + y].Pos.Y = currentColor.R/255 * HeightMultiplier;
 			Vertices[x * imgHeight + y].Normal = Vector();
 			//Für Mixmap
-			Vertices[x * imgHeight + y].u0 = (mixMap.getPixelColor(x,y).R / 255);
-			Vertices[x * imgHeight + y].v0 = (mixMap.getPixelColor(x, y).R / 255);
+			Vertices[x * imgHeight + y].u0 = x / (imgWidth * 1.0f);//(mixMap.getPixelColor(x,y).R / 255);
+			Vertices[x * imgHeight + y].v0 = y / (imgHeight * 1.0f);//(mixMap.getPixelColor(x, y).R / 255);
 			//Für Detailsmap
 			Vertices[x * imgHeight + y].u1 = x / (imgWidth * 1.0f) * k;
 			Vertices[x * imgHeight + y].v1 = y / (imgHeight * 1.0f) * k;
+			Vertices[x * imgHeight + y].u2 = x / (imgWidth * 1.0f) * k;
+			Vertices[x * imgHeight + y].v2 = y / (imgHeight * 1.0f) * k;
 		}
 	}
 
@@ -257,35 +259,48 @@ void Terrain::draw() {
 	glVertexPointer(3, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(0));
 	glNormalPointer(GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(12));
 
-	// setup texture-environment-unit 0 => grass
+	// setup mixtexture
 	glActiveTexture(GL_TEXTURE0);
 	glClientActiveTexture(GL_TEXTURE0);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(24)); // first uv-set
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(24));
+	m_MixingRatio.apply();
+
+	// setup texture-environment-unit 0 => grass
+	glActiveTexture(GL_TEXTURE1);
+	glClientActiveTexture(GL_TEXTURE1);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(32)); // first uv-set
 	m_GrassTex.apply();
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 	// setup texture-environment-unit 1 => sand
-	glActiveTexture(GL_TEXTURE1);
-	glClientActiveTexture(GL_TEXTURE1);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(32)); // second uv-set
-	m_SandTex.apply();
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-	// setup texture-environment-unit 2 => grass*sand
 	glActiveTexture(GL_TEXTURE2);
 	glClientActiveTexture(GL_TEXTURE2);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(24)); // is obsolete, but we have to supply it
-	m_MixingRatio.apply(); 
+	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(40)); // second uv-set
+	m_SandTex.apply();
+	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+	/*
+	// setup texture-environment-unit 2 => grass*sand
+	glActiveTexture(GL_TEXTURE3);
+	glClientActiveTexture(GL_TEXTURE3);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(32)); // is obsolete, but we have to supply it
+	m_GrassTex.apply();*/
+
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-	glTexEnvf(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_TEXTURE0); // arg0 is texture from unit 0
-	glTexEnvf(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_TEXTURE1); // arg1 is texture from unit 1
-	glTexEnvf(GL_TEXTURE_ENV, GL_SRC2_RGB, GL_TEXTURE2); // arg2 is texture from unit 2
+	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE);   //Interpolate RGB with RGB
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE1);
+	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE2);
+	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE2_RGB, GL_TEXTURE0);
 	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_COLOR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_ONE_MINUS_SRC_COLOR);
+	//GL_PRIMARY_COLOR
+	//glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+	//
 
 	// we draw our terrain
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, BUFFER_OFFSET(0));

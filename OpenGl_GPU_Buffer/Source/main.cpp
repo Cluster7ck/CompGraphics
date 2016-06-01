@@ -152,9 +152,9 @@ void DrawScene() {
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 
-	g_PlaneModel.draw();
+	//g_PlaneModel.draw();
 	// Neu
-	//g_Terrain.draw();
+	g_Terrain.draw();
 
     glutSwapBuffers();
     glutPostRedisplay();
