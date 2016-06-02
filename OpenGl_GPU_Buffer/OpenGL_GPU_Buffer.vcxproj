@@ -88,8 +88,9 @@
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\color.cpp" />
     <ClCompile Include="Source\main.cpp" />
-    <ClCompile Include="Source\PlaneModel.cpp" />
+    <ClCompile Include="Source\Matrix.cpp" />
     <ClCompile Include="Source\rgbimage.cpp" />
+    <ClCompile Include="Source\shaderprogram.cpp" />
     <ClCompile Include="Source\terrain.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
     <ClCompile Include="Source\vector.cpp" />
@@ -97,8 +98,9 @@
   <ItemGroup>
     <ClInclude Include="Header\Camera.h" />
     <ClInclude Include="Header\color.h" />
-    <ClInclude Include="Header\PlaneModel.h" />
+    <ClInclude Include="Header\Matrix.h" />
     <ClInclude Include="Header\rgbimage.h" />
+    <ClInclude Include="Header\shaderprogram.h" />
     <ClInclude Include="Header\targetver.h" />
     <ClInclude Include="Header\terrain.h" />
     <ClInclude Include="Header\Texture.h" />

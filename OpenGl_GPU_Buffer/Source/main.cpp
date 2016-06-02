@@ -20,7 +20,6 @@
 #endif
 #include "../Header/Camera.h"
 #include "../Header/texture.h"
-#include "../Header/PlaneModel.h"
 #include "../Header/Terrain.h"
 
 // window x and y size
@@ -29,7 +28,6 @@ const unsigned int g_WindowHeight=768;
 
 // light position (point light)
 const Vector g_LightPos = Vector( 0,16,0);
-PlaneModel g_PlaneModel;
 
 Camera g_Camera;
 
@@ -63,8 +61,6 @@ int main(int argc, char * argv[]) {
     glutKeyboardFunc(KeyboardCallback);
     glutMotionFunc(MouseMoveCallback);
     
-	g_PlaneModel.load("Ressources/grass.bmp", "Ressources/sand.bmp");
-	//Neu
 	g_Terrain.load("Ressources/heightmap.bmp", "Ressources/grass.bmp", "Ressources/sand.bmp", "Ressources/mixmap.bmp", 60, 60, 7);
 
     glutMainLoop();
@@ -150,8 +146,6 @@ void DrawScene() {
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 
-	//g_PlaneModel.draw();
-	// Neu
 	g_Terrain.draw();
 
     glutSwapBuffers();

@@ -21,9 +21,6 @@
     <ClCompile Include="Source\main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\PlaneModel.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Texture.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -39,12 +36,15 @@
     <ClCompile Include="Source\terrain.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Source\shaderprogram.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Matrix.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Camera.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\PlaneModel.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Header\targetver.h">
@@ -63,6 +63,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Header\terrain.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\shaderprogram.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Matrix.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

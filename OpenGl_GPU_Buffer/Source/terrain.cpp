@@ -230,13 +230,8 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 
 				vertexNormal = ((normalTri1 + normalTri2 + normalTri3 + normalTri4 + normalTri5 + normalTri6)).normalize();
 			}
-			/*
-			Vertices[x * imgWidth + y].Normal = vertexNormal * -1;
-			Vector dirLight = lightPos - Vertices[x * imgWidth + y].Pos;
-			dirLight.normalize();
-			if ((vertexNormal * -1).dot(dirLight) > 0 ) {
 
-			}*/
+			Vertices[x * imgWidth + y].Normal = vertexNormal * -1;
 		}
 	}
 
