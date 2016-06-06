@@ -66,8 +66,6 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 			//Für Detailsmap
 			Vertices[x * imgHeight + y].u1 = x / (imgWidth * 1.0f) * k;
 			Vertices[x * imgHeight + y].v1 = y / (imgHeight * 1.0f) * k;
-			Vertices[x * imgHeight + y].u2 = x / (imgWidth * 1.0f) * k;
-			Vertices[x * imgHeight + y].v2 = y / (imgHeight * 1.0f) * k;
 		}
 	}
 
@@ -91,7 +89,6 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 		}
 	}
 
-	Vector lightPos = Vector(0, 16, 0);
 	// Calc normals
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
@@ -230,11 +227,9 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 
 				vertexNormal = ((normalTri1 + normalTri2 + normalTri3 + normalTri4 + normalTri5 + normalTri6)).normalize();
 			}
-
 			Vertices[x * imgWidth + y].Normal = vertexNormal * -1;
 		}
 	}
-
 	
 	// create gpu buffer for vertices
 	glGenBuffers(1, &m_VertexBuffer);
@@ -269,6 +264,7 @@ void Terrain::draw() {
 	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(24));
 	m_MixingRatio.apply();
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
 	// setup texture-environment-unit 0 => grass
 	glActiveTexture(GL_TEXTURE1);
 	glClientActiveTexture(GL_TEXTURE1);
@@ -281,11 +277,12 @@ void Terrain::draw() {
 	glActiveTexture(GL_TEXTURE2);
 	glClientActiveTexture(GL_TEXTURE2);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(40)); // second uv-set
+	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(32)); // second uv-set
 	m_SandTex.apply();
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE);
+
 	//Interpolate between grass and sand with factor from mixmap
 	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE1);
 	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE2);
@@ -293,12 +290,14 @@ void Terrain::draw() {
 	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_ONE_MINUS_SRC_COLOR);
+
 	//save current state in texture so we can multiply with the shadow
 	glActiveTexture(GL_TEXTURE3);
 	glClientActiveTexture(GL_TEXTURE3);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(40));
+	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(32));
 	m_GrassTex.apply();
+
 	//multiply
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);

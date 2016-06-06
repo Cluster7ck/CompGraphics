@@ -18,11 +18,12 @@
     #include <OpenGL/OpenGL.h>
     #include <GLUT/GLUT.h>
 #endif
-#include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
 #include "../Header/Matrix.h"
 #include "../Header/Color.h"
-#include "../Header/Vector.h"
+#include "../Header/vector.h"
 
 class ShaderProgram{
 public:
@@ -48,7 +49,11 @@ private:
     GLuint m_VertexShader;
     GLuint m_FragmentShader;
     GLuint m_ShaderProgram;
-    
+	std::string m_VertexShaderString;
+	std::string m_FragmentShaderString;
+
+	std::string readFile(const char *filePath);
+	unsigned long getFileLength(std::ifstream& file);
 };
 
 #endif /* shaderprogram_hpp */

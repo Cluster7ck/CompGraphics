@@ -8,104 +8,193 @@
 
 #include "../Header/shaderprogram.h"
 
-unsigned long getFileLength(std::ifstream& file);
 
-ShaderProgram::ShaderProgram(){}
-ShaderProgram::~ShaderProgram(){}
+ShaderProgram::ShaderProgram() {
+}
 
-bool ShaderProgram::load(const char* VertexShader, const char* FragmentShader){
-	loadVertexShader(VertexShader);
-	loadFragmentShader(FragmentShader);
+ShaderProgram::~ShaderProgram() {
+}
+
+bool ShaderProgram::load(const char* VertexShader, const char* FragmentShader) {
+	if (!loadVertexShader(VertexShader)) {
+		std::cout << "Fehler beim Lesen des VertexShader." << std::endl;
+		return false;
+	}
+
+	if (!loadFragmentShader(FragmentShader)) {
+		std::cout << "Fehler beim Lesen des FragmentShader." << std::endl;
+		return false;
+	}
 
     return true;
 }
 
-bool ShaderProgram::loadVertexShader(const char* VertexShader){
-    GLubyte* ShaderSource;
-    
-    std::ifstream file;
-    file.open(VertexShader, file.in); // opens as ASCII!
-    unsigned long len = getFileLength(file);
-    if(!file) return false;
-    
-    len = getFileLength(file);
-    
-    if (len==0) return false;   // Error: Empty File
-    
-    ShaderSource = (GLubyte*) new char[len+1];
-    if (ShaderSource == 0) return false;   // can't reserve memory
-    
-    // len isn't always strlen cause some characters are stripped in ascii read...
-    // it is important to 0-terminate the real length later, len is just max possible value...
-    ShaderSource[len] = 0;
-    
-    unsigned int i=0;
-    while (file.good())
-    {
-        ShaderSource[i] = file.get();       // get character from file.
-        if (!file.eof())
-            i++;
-    }
-    
-    ShaderSource[i] = 0;  // 0-terminate it at the correct position
-    
-    file.close();
-    
-    m_VertexShader = glCreateShader(GL_VERTEX_SHADER);
+bool ShaderProgram::loadVertexShader(const char* VertexShader) {
+	m_VertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-    GLint length = (GLint) strlen((const char*)ShaderSource);
-    glShaderSource(m_VertexShader, 1, (const GLcharARB **)&ShaderSource, &length);
-
-    return true; // No Error
-
+	m_VertexShaderString = readFile(VertexShader);
+	if (m_VertexShaderString == "") {
+		return false;
+	}
+	return true;
 }
 
 bool ShaderProgram::loadFragmentShader(const char* FragmentShader) {
-	GLubyte* ShaderSource;
-
-	std::ifstream file;
-	file.open(FragmentShader, file.in);
-	unsigned long len = getFileLength(file);
-	if (!file) return false;
-
-	len = getFileLength(file);
-
-	if (len == 0) return false;
-
-	ShaderSource = (GLubyte*) new char[len + 1];
-	if (ShaderSource == 0) return false;
-
-	ShaderSource[len] = 0;
-
-	unsigned int i = 0;
-	while (file.good())
-	{
-		ShaderSource[i] = file.get();
-		if (!file.eof())
-			i++;
-	}
-
-	ShaderSource[i] = 0;
-
-	file.close();
-
 	m_FragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	GLint length = (GLint)strlen((const char*)ShaderSource);
-	glShaderSource(m_FragmentShader, 1, (const GLcharARB **)&ShaderSource, &length);
-
+	m_FragmentShaderString = readFile(FragmentShader);
+	if (m_FragmentShaderString == "") {
+		return false;
+	}
 	return true;
-
 }
 
+bool ShaderProgram::compile(std::string* CompileErrors = NULL) {
 
-unsigned long getFileLength(std::ifstream& file){
-    if(!file.good()) return 0;
-    
-    unsigned long pos=file.tellg();
-    file.seekg(0,file.end);
-    unsigned long len = file.tellg();
-    file.seekg(file.beg);
-    
-    return len;
+	// Read shaders
+	const char *vertexShaderSource = m_VertexShaderString.c_str();
+	const char *fragmentShaderSource = m_FragmentShaderString.c_str();
+
+	GLint result = GL_FALSE;
+	int logLength;
+
+	// Compile vertex shader
+	if (!m_VertexShaderString.empty()) {
+		std::cout << "Compiling vertex shader..." << std::endl;
+		glShaderSource(m_VertexShader, 1, &vertexShaderSource, NULL);
+		glCompileShader(m_VertexShader);
+		// Check vertex shader
+		glGetShaderiv(m_VertexShader, GL_COMPILE_STATUS, &result);
+		glGetShaderiv(m_VertexShader, GL_INFO_LOG_LENGTH, &logLength);
+		if (result == GL_FALSE) {
+			// Lässt sich ein Shader nicht kompilieren
+			std::cout << "...failed." << std::endl;
+			if (CompileErrors != NULL) {
+				// Fehlermeldungen des Compilers in CompileErrors schreiben
+				std::vector<char> vertexShaderError((logLength > 1) ? logLength : 1);
+				glGetShaderInfoLog(m_VertexShader, logLength, NULL, &vertexShaderError[0]);
+				*CompileErrors = std::string(&vertexShaderError[0]);
+			}
+			return false;
+		}
+		std::cout << "...complete." << std::endl;
+	}
+
+	// Compile fragment shader
+	if (!m_FragmentShaderString.empty()) {
+		std::cout << "Compiling fragment shader..." << std::endl;
+		glShaderSource(m_FragmentShader, 1, &fragmentShaderSource, NULL);
+		glCompileShader(m_FragmentShader);
+		// Check fragment shader
+		glGetShaderiv(m_FragmentShader, GL_COMPILE_STATUS, &result);
+		glGetShaderiv(m_FragmentShader, GL_INFO_LOG_LENGTH, &logLength);
+		if (result == GL_FALSE) {
+			// Lässt sich ein Shader nicht kompilieren
+			std::cout << "...failed." << std::endl;
+			if (CompileErrors != NULL) {
+				// Fehlermeldungen des Compilers in CompileErrors schreiben
+				std::vector<char> fragmentShaderError((logLength > 1) ? logLength : 1);
+				glGetShaderInfoLog(m_FragmentShader, logLength, NULL, &fragmentShaderError[0]);
+				*CompileErrors = std::string(&fragmentShaderError[0]);
+			}
+			return false;
+		}
+		std::cout << "...complete." << std::endl;
+	}
+
+	std::string* ProgramErrors = NULL;
+
+	std::cout << "Linking program..." << std::endl;
+	GLuint program = glCreateProgram();
+
+	glAttachShader(program, m_VertexShader);
+	glAttachShader(program, m_FragmentShader);
+	glLinkProgram(program);
+
+	glGetProgramiv(program, GL_LINK_STATUS, &result);
+	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+	if (result == GL_FALSE) {
+		// Lässt sich das Programm nicht verknüpfen
+		std::cout << "...failed." << std::endl;
+		if (ProgramErrors != NULL) {
+			// Fehlermeldungen des Compilers in CompileErrors schreiben
+			std::vector<char> programError((logLength > 1) ? logLength : 1);
+			glGetProgramInfoLog(program, logLength, NULL, &programError[0]);
+			*ProgramErrors = std::string(&programError[0]);
+		}
+		return false;
+	}
+	std::cout << "...complete." << std::endl;
+
+	glDeleteShader(m_VertexShader);
+	glDeleteShader(m_FragmentShader);
+
+	return true;
+}
+
+GLint ShaderProgram::getParameterID(const char* ParameterName) const {
+	return glGetUniformLocation(m_ShaderProgram, ParameterName);
+}
+
+void ShaderProgram::setParameter(GLint ID, float Param) {
+	//void glUniform1f(GLint location, GLfloat v0);
+	glUniform1f(ID, Param);
+}
+
+void ShaderProgram::setParameter(GLint ID, int Param) {
+	//void glUniform1i(GLint location, GLint v0);
+	glUniform1i(ID, Param);
+}
+
+void ShaderProgram::setParameter(GLint ID, const Vector& Param) {
+	//void glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+	glUniform3f(ID, Param.X, Param.Y, Param.Z);
+}
+
+void ShaderProgram::setParameter(GLint ID, const Color& Param) {
+	//void glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+	glUniform3f(ID, Param.R, Param.G, Param.B);
+}
+
+void ShaderProgram::setParameter(GLint ID, const Matrix& Param) {
+	//void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+	glUniformMatrix4fv(ID, 1, GL_FALSE, (GLfloat *)&Param);
+}
+
+void ShaderProgram::activate() const {
+	glUseProgram(m_ShaderProgram);
+}
+
+void ShaderProgram::deactivate() const {
+	glUseProgram(0);
+}
+
+std::string ShaderProgram::readFile(const char *filePath) {
+	std::string content;
+	std::ifstream fileStream(filePath, std::ios::in);
+
+	if (!fileStream.is_open()) {
+		std::cout << "Could not read file " << filePath << ". File does not exist." << std::endl;
+		return "";
+	}
+
+	std::string line = "";
+	while (!fileStream.eof()) {
+		std::getline(fileStream, line);
+		content.append(line + "\n");
+	}
+
+	fileStream.close();
+	return content;
+}
+
+unsigned long ShaderProgram::getFileLength(std::ifstream& file) {
+	if (!file.good()) return 0;
+
+	unsigned long pos = file.tellg();
+	file.seekg(0, file.end);
+	unsigned long len = file.tellg();
+	file.seekg(file.beg);
+
+	return len;
 }

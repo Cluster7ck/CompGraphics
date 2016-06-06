@@ -29,7 +29,6 @@ struct TerrainVertex {
 	Vector Normal;
 	float u0, v0 = 0;
 	float u1, v1 = 0;
-	float u2, v2 = 0;
 };
 
 class Terrain {
