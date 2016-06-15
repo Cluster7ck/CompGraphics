@@ -39,7 +39,7 @@ const char* g_ModelToLoad = "OBJmodels/sibenik/sponza.obj";
 //const char* g_ModelToLoad = "OBJmodels/figure.obj";
 
 // light position (point light)
-const Vector g_LightPos = Vector(0, 4, 0);
+const Vector g_LightPos = Vector(0, 16, 0);
 
 Camera g_Camera;
 Model g_Model;
@@ -78,8 +78,8 @@ int main(int argc, char * argv[]) {
 	glutMotionFunc(MouseMoveCallback);
 
 	//g_Model.load(g_ModelToLoad, true);
-	//g_Model.loadWithShader(g_ModelToLoad, "Shader/vertexshader.glsl", "Shader/blinn_phong_fragmentshader.glsl", true);
-	g_Model.loadWithShader(g_ModelToLoad, "Shader/vertexshader.glsl", "Shader/toon_fragmentshader.glsl", true);
+	g_Model.loadWithShader(g_ModelToLoad, "Shader/vertexshader.glsl", "Shader/blinn_phong_fragmentshader.glsl", true);
+	//g_Model.loadWithShader(g_ModelToLoad, "Shader/vertexshader.glsl", "Shader/toon_fragmentshader.glsl", true);
 	
 	glutMainLoop();
 }

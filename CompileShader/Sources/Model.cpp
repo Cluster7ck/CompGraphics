@@ -75,11 +75,17 @@ bool Model::loadWithShader(const char* Filename,  const char* VertexShader, cons
 }
 
 void Model::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp){
+	GLint paraID = m_ShaderProgram.getParameterID("LightPos");
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("LightPos"), LightPos);
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("LightColor"), LightColor);
+	//paraID = m_ShaderProgram.getParameterID("litColor");
+	//m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("litColor"), LightColor);
+	paraID = m_ShaderProgram.getParameterID("DiffColor");
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("DiffColor"), DiffColor);
+	paraID = m_ShaderProgram.getParameterID("SpecColor");
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecColor"), SpecColor);
+	paraID = m_ShaderProgram.getParameterID("AmbientColor");
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("AmbientColor"), AmbientColor);
+	paraID = m_ShaderProgram.getParameterID("SpecExp");
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecExp"), SpecExp);
 }
 
@@ -415,9 +421,9 @@ void Model::createMaterials(const char* Filename) {
 
 	}
 	fileStream.close();
-	/*for (int i = 0; i < m_MaterialCount; i++) {
+	for (int i = 0; i < m_MaterialCount; i++) {
 		std::cout << m_pMaterials[i].getName() << std::endl;
-	}*/
+	}
 }
 
 const BoundingBox& Model::boundingBox() const {
@@ -443,7 +449,7 @@ void Model::drawLines() const {
 	glEnd();
 }
 
-void Model::drawTriangles() const {
+void Model::drawTriangles(){
 	//Draw Triangles for every Material
 	if (m_mtlMap.empty()) {
 		m_ShaderProgram.activate();
@@ -458,6 +464,7 @@ void Model::drawTriangles() const {
 		glEnd();
 		m_ShaderProgram.deactivate();
 	} else {
+		m_ShaderProgram.activate();
 		for (auto const &itMap : m_mtlMap) {
 
 			Material currentMaterial;
@@ -469,7 +476,7 @@ void Model::drawTriangles() const {
 			setMaterial(currentMaterial);
 
 			//itMap.second is vector of face indices || indeces are in pairs x --- y => i=i+2
-			m_ShaderProgram.activate();
+			setShaderUniforms(Vector(0, 4, 0), Color(1.0f, 1.0f, 1.0f), currentMaterial.getDiffuseColor(), currentMaterial.getSpecularColor(), currentMaterial.getAmbientColor(), currentMaterial.getSpecularExponent());
 			glBegin(GL_TRIANGLES);
 			for (unsigned int n = 0; n < itMap.second.size(); n += 2) {
 				for (unsigned int i = itMap.second[n]; i <= itMap.second[n + 1]; i++) {
@@ -481,8 +488,9 @@ void Model::drawTriangles() const {
 				}
 			}
 			glEnd();
-			m_ShaderProgram.deactivate();
+			
 		}
+		m_ShaderProgram.deactivate();
 	}
 }
 
@@ -510,6 +518,4 @@ void Model::setMaterial(Material mtl) const {
 	glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
 
 	mtl.getTexture().apply();
-
-	setShaderUniforms(Vector(0, 4, 0), Color(1.0f, 1.0f, 1.0f), mtl.getDiffuseColor(), mtl.getSpecularColor(), mtl.getAmbientColor(), specExp);
 }

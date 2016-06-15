@@ -50,9 +50,9 @@ public:
     const BoundingBox& boundingBox() const;
     bool load( const char* Filename, bool FitSize=true);
 	bool loadWithShader(const char* Filename, const char* VertexShader, const char* FragmentShader, bool FitSize = true);
-	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp) const;
+	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp);
     void drawLines() const;
-	void drawTriangles() const;
+	void drawTriangles();
 	void setMaterial(Material mtl) const;
 
 protected:
