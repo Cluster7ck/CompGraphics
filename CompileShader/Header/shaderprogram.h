@@ -35,7 +35,7 @@ public:
     bool compile( std::string* CompileErrors = NULL);
     
     GLint getParameterID(const char* ParameterName) const;
-    
+
     void setParameter(GLint ID, float Param);
     void setParameter(GLint ID, int Param);
     void setParameter(GLint ID, const Vector& Param);

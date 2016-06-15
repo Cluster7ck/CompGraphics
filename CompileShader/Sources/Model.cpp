@@ -70,7 +70,17 @@ bool Model::loadWithShader(const char* Filename,  const char* VertexShader, cons
 		m_ShaderProgram.compile(&compileErrors);
 	}
 	std::cout << compileErrors << std::endl;
+
 	return true;
+}
+
+void Model::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp){
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("LightPos"), LightPos);
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("LightColor"), LightColor);
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("DiffColor"), DiffColor);
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecColor"), SpecColor);
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("AmbientColor"), AmbientColor);
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecExp"), SpecExp);
 }
 
 void Model::createObject(const char* Filename, bool FitSize) {
@@ -485,7 +495,7 @@ void Model::replaceFilename(const char* Filename,const char* replacer,char* dest
 	strcpy(backslashPointer + 1, replacer);
 }
 
-void setMaterial(Material mtl) {
+void Model::setMaterial(Material mtl) const {
 	
 	float diff[4];
 	float spec[4];
@@ -500,4 +510,6 @@ void setMaterial(Material mtl) {
 	glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
 
 	mtl.getTexture().apply();
+
+	setShaderUniforms(Vector(0, 4, 0), Color(1.0f, 1.0f, 1.0f), mtl.getDiffuseColor(), mtl.getSpecularColor(), mtl.getAmbientColor(), specExp);
 }

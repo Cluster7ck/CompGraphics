@@ -32,8 +32,8 @@ const unsigned int g_WindowHeight = 768;
 
 // Model that should be loaded
 //const char* g_ModelToLoad = "OBJmodels/conference/conference.obj";
-const char* g_ModelToLoad = "OBJmodels/sibenik/sibenik.obj"; 
-//const char* g_ModelToLoad = "OBJmodels/sibenik/sponza.obj";
+//const char* g_ModelToLoad = "OBJmodels/sibenik/sibenik.obj"; 
+const char* g_ModelToLoad = "OBJmodels/sibenik/sponza.obj";
 //const char* g_ModelToLoad = "OBJmodels/sponza/sponza.obj";
 //const char* g_ModelToLoad = "OBJmodels/cube.obj";
 //const char* g_ModelToLoad = "OBJmodels/figure.obj";
@@ -78,9 +78,9 @@ int main(int argc, char * argv[]) {
 	glutMotionFunc(MouseMoveCallback);
 
 	//g_Model.load(g_ModelToLoad, true);
-	g_Model.loadWithShader(g_ModelToLoad, "Shader/vertexshader.glsl", "Shader/blinn_phong_fragmentshader.glsl", true);
-	//g_Model.loadWithShader(g_ModelToLoad, "Shader/vertexshader.glsl", "Shader/toon_fragmentshader.glsl", true);
-
+	//g_Model.loadWithShader(g_ModelToLoad, "Shader/vertexshader.glsl", "Shader/blinn_phong_fragmentshader.glsl", true);
+	g_Model.loadWithShader(g_ModelToLoad, "Shader/vertexshader.glsl", "Shader/toon_fragmentshader.glsl", true);
+	
 	glutMainLoop();
 }
 
