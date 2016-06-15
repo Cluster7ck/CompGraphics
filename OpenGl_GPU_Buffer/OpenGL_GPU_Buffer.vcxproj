@@ -85,29 +85,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Camera.cpp" />
-    <ClCompile Include="Source\color.cpp" />
-    <ClCompile Include="Source\main.cpp" />
-    <ClCompile Include="Source\Matrix.cpp" />
-    <ClCompile Include="Source\rgbimage.cpp" />
-    <ClCompile Include="Source\shaderprogram.cpp" />
-    <ClCompile Include="Source\terrain.cpp" />
-    <ClCompile Include="Source\Texture.cpp" />
-    <ClCompile Include="Source\vector.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Header\Camera.h" />
-    <ClInclude Include="Header\color.h" />
-    <ClInclude Include="Header\Matrix.h" />
-    <ClInclude Include="Header\rgbimage.h" />
-    <ClInclude Include="Header\shaderprogram.h" />
-    <ClInclude Include="Header\targetver.h" />
-    <ClInclude Include="Header\terrain.h" />
-    <ClInclude Include="Header\Texture.h" />
-    <ClInclude Include="Header\vector.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\CompileShader\Header\Camera.h" />
+    <ClInclude Include="..\CompileShader\Header\color.h" />
+    <ClInclude Include="..\CompileShader\Header\Material.h" />
+    <ClInclude Include="..\CompileShader\Header\Matrix.h" />
+    <ClInclude Include="..\CompileShader\Header\Model.h" />
+    <ClInclude Include="..\CompileShader\Header\shaderprogram.h" />
+    <ClInclude Include="..\CompileShader\Header\Texture.h" />
+    <ClInclude Include="..\CompileShader\Header\vector.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\CompileShader\Sources\Camera.cpp" />
+    <ClCompile Include="..\CompileShader\Sources\color.cpp" />
+    <ClCompile Include="..\CompileShader\Sources\main.cpp" />
+    <ClCompile Include="..\CompileShader\Sources\Material.cpp" />
+    <ClCompile Include="..\CompileShader\Sources\Matrix.cpp" />
+    <ClCompile Include="..\CompileShader\Sources\Model.cpp" />
+    <ClCompile Include="..\CompileShader\Sources\shaderprogram.cpp" />
+    <ClCompile Include="..\CompileShader\Sources\Texture.cpp" />
+    <ClCompile Include="..\CompileShader\Sources\vector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
