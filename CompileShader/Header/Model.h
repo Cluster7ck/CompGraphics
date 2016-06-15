@@ -12,6 +12,7 @@
 #include <iostream>
 #include "../Header/vector.h"
 #include "../Header/color.h"
+#include "../Header/shaderprogram.h"
 
 #include <string>
 #include <map>
@@ -48,16 +49,16 @@ public:
     ~Model();
     const BoundingBox& boundingBox() const;
     bool load( const char* Filename, bool FitSize=true);
+	bool loadWithShader(const char* Filename, const char* VertexShader, const char* FragmentShader, bool FitSize = true);
     void drawLines() const;
-    void drawTrianglesOld() const;
 	void drawTriangles() const;
 
 protected:
-    void createCube();
 	void createObject(const char* filename, bool fitSize);
 	void createMaterials(const char* filename);
 	void replaceFilename(const char* Filename, const char* replacer, char* destination);
 
+	ShaderProgram m_ShaderProgram;
     Material* m_pMaterials;
     unsigned int m_MaterialCount;
     Vertex* m_pVertices;

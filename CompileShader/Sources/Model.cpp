@@ -53,6 +53,26 @@ bool Model::load(const char* Filename, bool FitSize) {
     return true;
 }
 
+bool Model::loadWithShader(const char* Filename,  const char* VertexShader, const char* FragmentShader, bool FitSize) {
+	createObject(Filename, FitSize);
+	std::string compileErrors;
+	if (FragmentShader == NULL && VertexShader != NULL) {
+		m_ShaderProgram.loadVertexShader(VertexShader);
+		m_ShaderProgram.compile(&compileErrors);
+
+	}
+	else if (FragmentShader != NULL && VertexShader == NULL) {
+		m_ShaderProgram.loadFragmentShader(FragmentShader);
+		m_ShaderProgram.compile(&compileErrors);
+	}
+	else if (VertexShader != NULL && FragmentShader != NULL) {
+		m_ShaderProgram.load(VertexShader, FragmentShader);
+		m_ShaderProgram.compile(&compileErrors);
+	}
+	std::cout << compileErrors << std::endl;
+	return true;
+}
+
 void Model::createObject(const char* Filename, bool FitSize) {
 	std::ifstream fileStream(Filename);
 	if (!fileStream) {
@@ -296,7 +316,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	}
 
 	//print mtl with index
-	for (auto const &itMap : m_mtlMap) {
+	/*for (auto const &itMap : m_mtlMap) {
 		std::cout << " name: " << itMap.first <<std::endl;
 		std::cout << "{";
 		for (int i = 0; i < itMap.second.size(); i++) {
@@ -312,7 +332,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		printf("p(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Position.X, m_pVertices[i].Position.Y, m_pVertices[i].Position.Z);
 		printf("n(%2.1f, %2.1f, %2.1f) ", m_pVertices[i].Normal.X, m_pVertices[i].Normal.Y, m_pVertices[i].Normal.Z);
 		printf("t(%2.1f, %2.1f)\n", m_pVertices[i].TexcoordS, m_pVertices[i].TexcoordT);
-	}
+	}*/
     fileStream.close();
 	
 }
@@ -416,6 +436,7 @@ void Model::drawLines() const {
 void Model::drawTriangles() const {
 	//Draw Triangles for every Material
 	if (m_mtlMap.empty()) {
+		m_ShaderProgram.activate();
 		glBegin(GL_TRIANGLES);
 
 		for (unsigned int i = 0; i < m_VertexCount / 3; i++) {
@@ -425,6 +446,7 @@ void Model::drawTriangles() const {
 			}
 		}
 		glEnd();
+		m_ShaderProgram.deactivate();
 	} else {
 		for (auto const &itMap : m_mtlMap) {
 
@@ -437,6 +459,7 @@ void Model::drawTriangles() const {
 			setMaterial(currentMaterial);
 
 			//itMap.second is vector of face indices || indeces are in pairs x --- y => i=i+2
+			m_ShaderProgram.activate();
 			glBegin(GL_TRIANGLES);
 			for (unsigned int n = 0; n < itMap.second.size(); n += 2) {
 				for (unsigned int i = itMap.second[n]; i <= itMap.second[n + 1]; i++) {
@@ -448,6 +471,7 @@ void Model::drawTriangles() const {
 				}
 			}
 			glEnd();
+			m_ShaderProgram.deactivate();
 		}
 	}
 }

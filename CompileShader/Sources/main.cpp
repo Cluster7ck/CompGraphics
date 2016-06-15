@@ -32,11 +32,11 @@ const unsigned int g_WindowHeight = 768;
 
 // Model that should be loaded
 //const char* g_ModelToLoad = "OBJmodels/conference/conference.obj";
-//const char* g_ModelToLoad = "OBJmodels/sibenik/sibenik.obj"; 
+const char* g_ModelToLoad = "OBJmodels/sibenik/sibenik.obj"; 
 //const char* g_ModelToLoad = "OBJmodels/sibenik/sponza.obj";
 //const char* g_ModelToLoad = "OBJmodels/sponza/sponza.obj";
 //const char* g_ModelToLoad = "OBJmodels/cube.obj";
-const char* g_ModelToLoad = "OBJmodels/figure.obj";
+//const char* g_ModelToLoad = "OBJmodels/figure.obj";
 
 // light position (point light)
 const Vector g_LightPos = Vector(0, 4, 0);
@@ -77,9 +77,9 @@ int main(int argc, char * argv[]) {
 	glutKeyboardFunc(KeyboardCallback);
 	glutMotionFunc(MouseMoveCallback);
 
-	g_Model.load(g_ModelToLoad, true);
-	//g_Model.load(g_ModelToLoad, "OBJmodels/vertexshader.glsl", "OBJmodels/blinn_phong_fragmentshader.glsl", true);
-	//g_Model.load(g_ModelToLoad, "OBJmodels/vertexshader.glsl", "OBJmodels/toon_fragmentshader.glsl", true);
+	//g_Model.load(g_ModelToLoad, true);
+	g_Model.loadWithShader(g_ModelToLoad, "Shader/vertexshader.glsl", "Shader/blinn_phong_fragmentshader.glsl", true);
+	//g_Model.loadWithShader(g_ModelToLoad, "Shader/vertexshader.glsl", "Shader/toon_fragmentshader.glsl", true);
 
 	glutMainLoop();
 }
@@ -164,7 +164,7 @@ void DrawScene() {
 	glLoadIdentity();
 	g_Camera.apply();
 
-	DrawGroundGrid();
+	//DrawGroundGrid();
 
 	GLfloat lpos[4];
 	lpos[0] = g_LightPos.X; lpos[1] = g_LightPos.Y; lpos[2] = g_LightPos.Z; lpos[3] = 1;

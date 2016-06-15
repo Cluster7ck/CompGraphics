@@ -10,9 +10,9 @@ uniform sampler2D DiffuseTexture;
 
 varying vec3 Normal;
 varying vec3 Position;
-varying Vec2 Texcoord;
+varying vec2 Texcoord;
 
-float sat(flat a) {
+float sat(float a) {
     return clamp(a, 0.0, 1.0);
 }
 
@@ -20,13 +20,13 @@ void main(void) {
     vec3 N = normalize(Normal);
     vec3 L = normalize(LightPos - Position);
     vec3 E = normalize(- Position);
-    vex3 R = reflect(- L, N);
+    vec3 R = reflect(- L, N);
 
     vec3 DiffuseComponent = DiffColor * sat(dot(N, L));
     vec3 SpecularComponent = SpecColor * pow(sat(dot(E, R)), SpecExp);
 
     vec3 DiffuseTexColor = texture2D(DiffuseTexture, Texcoord).rgb;
-    DiffuseComponent *= DefuseTexColor;
+    DiffuseComponent *= DiffuseTexColor;
 
     vec3 AmbientComponent = AmbientColor * DiffuseTexColor;
 

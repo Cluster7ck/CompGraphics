@@ -1,15 +1,10 @@
-attribute vec3 inputPosition;
-attribute vec2 inputTexCoord;
-attribute vec3 inputNormal;
+varying vec3 Normal;
+varying vec3 Position;
+varying vec2 Texcoord;
 
-uniform mat4 projection, modelview, normalMat;
-
-varying vec3 normalInterp;
-varying vec3 vertPos;
-
-void main(){
-    gl_Position = projection * modelview * vec4(inputPosition, 1.0);
-    vec4 vertPos4 = modelview * vec4(inputPosition, 1.0);
-    vertPos = vec3(vertPos4) / vertPos4.w;
-    normalInterp = vec3(normalMat * vec4(inputNormal, 0.0));
+void main(void) {
+	Position = (gl_ModelViewMatrix * gl_Vertex).xyz;
+	Normal = gl_NormalMatrix * gl_Normal;
+	Texcoord = gl_MultiTexCoord0.xy;
+	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 }
