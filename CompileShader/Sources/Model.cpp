@@ -473,10 +473,12 @@ void Model::drawTriangles(){
 					currentMaterial = m_pMaterials[k];
 				}
 			}
-			setMaterial(currentMaterial);
+			//setMaterial(currentMaterial);
 
 			//itMap.second is vector of face indices || indeces are in pairs x --- y => i=i+2
-			setShaderUniforms(Vector(0, 4, 0), Color(1.0f, 1.0f, 1.0f), currentMaterial.getDiffuseColor(), currentMaterial.getSpecularColor(), currentMaterial.getAmbientColor(), currentMaterial.getSpecularExponent());
+			setShaderUniforms(Vector(3, 4, 1), Color(1.0f, 1.0f, 1.0f), currentMaterial.getDiffuseColor(), currentMaterial.getSpecularColor(), currentMaterial.getAmbientColor(), currentMaterial.getSpecularExponent());
+			currentMaterial.getTexture().apply();
+			m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("DiffuseTexture"), 0);
 			glBegin(GL_TRIANGLES);
 			for (unsigned int n = 0; n < itMap.second.size(); n += 2) {
 				for (unsigned int i = itMap.second[n]; i <= itMap.second[n + 1]; i++) {
